@@ -1,98 +1,97 @@
-# vinext-starter
+# Native Official Web
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+Native 개발팀의 공식 홈페이지입니다. 팀 소개, 주요 프로젝트, 개발 문화와 혜택, NativeLab, 지원 공고를 한곳에서 안내합니다.
 
-## Prerequisites
+- 홈페이지: https://native-web-eight.vercel.app
+- GitHub: https://github.com/team-native/native-official-web
 
-- Node.js `>=22.13.0`
+## 주요 기능
 
-## Quick Start
+- Native 팀과 두 가지 핵심 브랜딩 소개
+- BOOK-ON, HOPES, IT-DA 프로젝트 소개
+- 개발 문화와 팀 혜택 안내
+- iOS, Android, Front-End, Design, Back-End 지원 공고
+- 포지션별 지원서 작성 화면
+- 지원 및 NativeLab 프로젝트 문의 화면
+- 데스크톱과 모바일 반응형 레이아웃
+- NativeLab 별도 소개 페이지
+
+## 페이지
+
+| 경로 | 설명 |
+| --- | --- |
+| `/` | 팀 소개, 프로젝트, 개발 문화, 혜택, 지원 공고 |
+| `/apply?role=iOS` | 선택한 포지션의 지원서 작성 |
+| `/contact` | 지원 관련 문의 |
+| `/contact?topic=프로젝트` | NativeLab 프로젝트 문의 |
+| `/nativelab` | NativeLab 소개 |
+
+## 기술 구성
+
+- TypeScript
+- React 19
+- Next.js 16 호환 App Router
+- vinext / Vite
+- CSS 기반 반응형 디자인
+- Vercel 배포
+
+## 로컬 실행
+
+Node.js 22.13 이상이 필요합니다.
 
 ```bash
+git clone https://github.com/team-native/native-official-web.git
+cd native-official-web
 npm install
 npm run dev
-npm run build
 ```
 
-This starter does not use `wrangler.jsonc`.
+개발 서버가 출력한 로컬 주소로 접속하면 됩니다.
 
-## Included Shape
+## 명령어
 
-- edit site code under `app/`
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
-
-## Workspace Auth Headers
-
-OpenAI workspace sites can read the current user's email from
-`oai-authenticated-user-email`.
-
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
-
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
+```bash
+npm run dev       # 개발 서버 실행
+npm run build     # 배포용 빌드 확인
+npm run start     # 프로덕션 서버 실행
+npm run lint      # 코드 검사
 ```
 
-## Optional Dispatch-Owned ChatGPT Sign-In
+## 프로젝트 구조
 
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
+```text
+app/
+├── page.tsx              # 메인 홈페이지
+├── apply/page.tsx        # 지원서
+├── contact/page.tsx      # 지원 및 프로젝트 문의
+├── nativelab/page.tsx    # NativeLab 소개
+├── layout.tsx            # 메타데이터와 공통 레이아웃
+└── globals.css           # 전체 스타일과 반응형 규칙
 
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
-  browser links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
+public/
+├── brand/                # 프로젝트 및 팀 심볼
+└── *.png                 # 제품 화면과 홈페이지 이미지
+```
 
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
+## 지원서와 문의 전송
 
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
+현재 지원서와 문의 폼은 입력값을 확인한 뒤 사용자의 메일 앱을 여는 방식입니다. 별도의 서버나 데이터베이스에 지원 정보를 저장하지 않습니다.
 
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
+실제 운영용으로 전환할 때는 다음 기능을 추가할 수 있습니다.
 
-## Useful Commands
+- 이메일 또는 소셜 로그인
+- 회원가입과 이메일 인증
+- 지원서 및 문의 내용 서버 저장
+- 관리자 지원서 조회 및 상태 관리
+- 합격·불합격 이메일 발송
+- 개인정보 보관 기간에 따른 자동 삭제
 
-- `npm run dev`: start local development
-- `npm run build`: verify the vinext build output
-- `npm test`: build the starter and verify its rendered loading skeleton
-- `npm run db:generate`: generate Drizzle migrations after schema changes
+## 배포
 
-## Learn More
+`main` 브랜치의 소스를 Vercel 프로젝트와 연결해 배포할 수 있습니다. `.env` 파일과 API 키는 GitHub에 올리지 않고 Vercel의 Environment Variables에 등록합니다.
 
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+`.next`, `dist`, `.vercel`, `node_modules` 등의 로컬 생성 파일은 Git에서 제외됩니다.
+
+## 라이선스
+
+이 저장소의 코드와 브랜드 에셋은 Native 팀 내부 프로젝트를 위해 관리됩니다.
