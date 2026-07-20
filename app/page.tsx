@@ -2,25 +2,12 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-
-const projects = [
-  { name: "BOOK-ON", type: "Main product · Mobile", description: "독서 기록부터 마라톤까지, 읽는 경험을 오래 이어주는 Native의 메인 서비스", logo: "/brand/bookon-symbol.png", images: ["/book-on.png", "/bookon-detail.png"], tone: "bookon", visual: "phone-pair", tags: ["iOS", "Android", "Back-End"] },
-  { name: "HOPES", type: "AI school platform", description: "학생의 질문과 경험을 연결해 더 솔직한 학교 생활을 돕는 AI 선배 챗봇", logo: "/brand/hopes-symbol.png", images: ["/hopes-ui.png"], tone: "hopes", visual: "web-screen", tags: ["Flutter", "Android", "Front-End", "Back-End"] },
-  { name: "IT-DA", type: "Project community", description: "학교 안에서 프로젝트와 사람을 발견하고 함께 팀을 만드는 협업 커뮤니티", logo: "/brand/itda-symbol.png", images: ["/itda-login.png", "/itda-home.png", "/itda-profile.png"], tone: "itda", visual: "phone-trio", tags: ["iOS", "Front-End", "Back-End", "Android"] },
-];
+import { fallbackJobs, fallbackProjects, JobPosting, Project } from "@/lib/content";
 
 const teamFacts = [
   { value: "03", label: "PUBLIC PRODUCTS", copy: "BOOK-ON · HOPES · IT-DA" },
   { value: "19", label: "TEAM MEMBERS", copy: "기획 · 디자인 · 개발이 한 팀으로" },
   { value: "03", label: "CORE PLATFORMS", copy: "iOS · Android · Web" },
-];
-
-const openings = [
-  { department: "NATIVE APP", title: "iOS", copy: "iPhone과 iPad에서 자연스럽게 작동하는 제품 경험을 함께 만듭니다.", priority: false },
-  { department: "NATIVE APP", title: "Android", copy: "다양한 Android 기기에서 안정적이고 일관된 경험을 구현합니다.", priority: false },
-  { department: "WEB", title: "Front-End", copy: "빠른 실험을 이해하기 쉽고 완성도 높은 웹 화면으로 연결합니다.", priority: true },
-  { department: "DESIGN", title: "Design", copy: "문제를 발견하고 사용자가 바로 이해하는 경험으로 구체화합니다.", priority: true },
-  { department: "SERVER", title: "Back-End", copy: "여러 제품이 안정적으로 성장할 수 있는 구조와 데이터를 설계합니다.", priority: false },
 ];
 
 const principles = [
@@ -49,12 +36,24 @@ function CultureVisual({ type }: { type: string }) {
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [projects, setProjects] = useState<Project[]>(fallbackProjects);
+  const [openings, setOpenings] = useState<JobPosting[]>(fallbackJobs);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 32);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/content", { cache: "no-store" })
+      .then(async (response) => response.ok ? await response.json() as { projects?: Project[]; jobs?: JobPosting[] } : null)
+      .then((payload) => {
+        if (payload?.projects?.length) setProjects(payload.projects);
+        if (payload?.jobs) setOpenings(payload.jobs);
+      })
+      .catch(() => undefined);
   }, []);
 
   const closeMenu = () => setMenuOpen(false);
@@ -97,7 +96,7 @@ export default function Home() {
       </section>
 
       <aside className="floating-recruit" aria-label="Native 지원 안내">
-        <div><i /> 현재 5개 직군 지원 접수 중</div>
+        <div><i /> 현재 {openings.length}개 직군 지원 접수 중</div>
         <a href="#recruit">지원 공고 보기 <span>→</span></a>
       </aside>
 
@@ -156,7 +155,7 @@ export default function Home() {
                 </div>
                 <p>{project.description}</p>
                 <div className="project-tags">{project.tags.map((tag) => <small key={tag}>{tag}</small>)}</div>
-                <div className="case-link">프로젝트 자세히 보기 <b>→</b></div>
+                <a className="case-link" href={`/projects/${project.slug}`}>프로젝트 자세히 보기 <b>→</b></a>
               </div>
               <div className={`project-stage ${project.visual}`}>
                 <span className="project-symbol" aria-hidden="true"><Image src={project.logo} alt="" fill sizes="180px" unoptimized /></span>
@@ -234,20 +233,20 @@ export default function Home() {
             <h2>지금 지원할 수 있는<br />포지션을 확인하세요.</h2>
             <p>아이디어를 직접 이끌고, 플랫폼에 가장 자연스러운 경험을 끝까지 구현할 동료를 모집합니다.</p>
             <div className="recruit-points">
-              <span><b>5</b> 모집 직군</span>
-              <span><b>2</b> 우대 모집</span>
+              <span><b>{openings.length}</b> 모집 직군</span>
+              <span><b>{openings.filter((opening) => opening.priority).length}</b> 우대 모집</span>
               <span><b>19</b> 팀 멤버</span>
             </div>
           </div>
 
           <div className="job-board">
-            <div className="job-board-title"><h3>모집 포지션</h3><span>5개 직군 · Front-End와 Design 우대</span></div>
+            <div className="job-board-title"><h3>모집 포지션</h3><span>{openings.length}개 직군 · 우대 모집 공고 포함</span></div>
             <div className="job-grid">
               {openings.map((opening) => (
                 <a className={opening.priority ? "job-card featured" : "job-card"} href={`/apply?role=${encodeURIComponent(opening.title)}`} key={opening.title}>
                   <div className="job-top"><small>{opening.department}</small><b>{opening.priority ? "우대 모집" : "모집 중"}</b></div>
                   <h4>{opening.title}</h4>
-                  <p>{opening.copy}</p>
+                  <p>{opening.summary}</p>
                   <div className="job-action">지원서 작성하기 <span>↗</span></div>
                 </a>
               ))}

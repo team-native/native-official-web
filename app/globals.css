@@ -500,6 +500,16 @@ footer { padding: 38px max(6vw, 32px) 24px; background: #fff; border-top: 1px so
 .submit-row button:hover:not(:disabled) { transform: translateY(-4px); box-shadow: 0 14px 30px rgba(255,190,24,.25); }
 .submit-row button:disabled { opacity: .38; cursor: not-allowed; }
 .submit-row button span { font-size: 18px; }
+.submit-row > div { min-width: 270px; }
+.submit-row > div button { width: 100%; }
+.form-server-error { margin-bottom: 8px; display:block; color:#ba4f47; font-size:10px; text-align:right; }
+.form-honeypot { position:absolute !important; left:-9999px !important; width:1px !important; height:1px !important; opacity:0 !important; pointer-events:none !important; }
+.form-success { min-height:520px; padding:80px 10%; display:flex; align-items:flex-start; flex-direction:column; justify-content:center; }
+.form-success > span { width:54px; height:54px; display:grid; place-items:center; border-radius:17px; background:var(--yellow); font-size:22px; font-weight:800; }
+.form-success > small { margin-top:30px; color:#9a9aa1; font-size:9px; font-weight:750; letter-spacing:.13em; }
+.form-success h3 { margin:12px 0; font-size:38px; letter-spacing:-.055em; }
+.form-success p { margin:0; color:var(--muted); font-size:14px; line-height:1.7; }
+.form-success a { margin-top:30px; padding:13px 17px; border-radius:999px; background:#18181a; color:#fff; font-size:11px; font-weight:700; }
 
 @media (max-width: 980px) {
   .site-header { grid-template-columns: 1fr auto; height: 68px; padding-inline: 22px; }

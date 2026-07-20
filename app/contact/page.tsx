@@ -11,6 +11,9 @@ export default function ContactPage() {
   const [agreed, setAgreed] = useState(false);
   const [topic, setTopic] = useState(topics[0]);
   const [errors, setErrors] = useState<ContactErrors>({});
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [serverError, setServerError] = useState("");
   const isProjectInquiry = topic === "프로젝트";
 
   useEffect(() => {
@@ -18,9 +21,10 @@ export default function ContactPage() {
     if (requestedTopic && topics.includes(requestedTopic)) setTopic(requestedTopic);
   }, []);
 
-  const submitQuestion = (event: FormEvent<HTMLFormElement>) => {
+  const submitQuestion = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    const data = new FormData(form);
     const studentName = String(data.get("studentName") ?? "").trim();
     const email = String(data.get("email") ?? "").trim();
     const question = String(data.get("question") ?? "").trim();
@@ -34,6 +38,29 @@ export default function ContactPage() {
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0 || !agreed) return;
 
+    setSubmitting(true);
+    setServerError("");
+    const response = await fetch("/api/inquiries", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ topic, studentName, email, message: question, website: data.get("website") }),
+    }).catch(() => null);
+
+    if (response?.ok) {
+      setSubmitting(false);
+      setSubmitted(true);
+      form.reset();
+      setAgreed(false);
+      return;
+    }
+
+    if (response && response.status !== 503) {
+      const payload = await response.json().catch(() => ({})) as { error?: string };
+      setSubmitting(false);
+      setServerError(payload.error ?? "문의를 보내지 못했습니다. 잠시 후 다시 시도해주세요.");
+      return;
+    }
+
     const subject = `[Native 지원 문의] ${data.get("topic")} · ${studentName}`;
     const body = [
       `학번과 이름: ${studentName}`,
@@ -45,6 +72,7 @@ export default function ContactPage() {
     ].join("\n");
 
     window.location.href = `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    setSubmitting(false);
   };
 
   return (
@@ -81,7 +109,8 @@ export default function ContactPage() {
             <p>필요한 내용만 간단히 작성해주세요.</p>
           </div>
 
-          <form className="application-form" onSubmit={submitQuestion} noValidate>
+          {submitted ? <div className="form-success"><span>✓</span><small>MESSAGE RECEIVED</small><h3>문의가 접수되었습니다.</h3><p>작성한 이메일로 확인 후 답변드리겠습니다.</p><a href={isProjectInquiry ? "/nativelab" : "/"}>돌아가기</a></div> : <form className="application-form" onSubmit={submitQuestion} noValidate>
+            <input className="form-honeypot" type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" />
             <label className={`form-field form-field-full question-field ${errors.studentName ? "has-error" : ""}`}>
               <span>학번과 이름 <b>*</b></span>
               <input
@@ -136,10 +165,10 @@ export default function ContactPage() {
             </label>
 
             <div className="submit-row form-field-full">
-              <p>버튼을 누르면 문의 내용이 담긴 메일 앱이 열립니다.<br />내용을 확인한 뒤 전송해주세요.</p>
-              <button type="submit" disabled={!agreed}>{isProjectInquiry ? "프로젝트 문의 보내기" : "지원 문의 보내기"} <span>→</span></button>
+              <p>접수한 문의는 Native 관리자만 확인할 수 있습니다.<br />작성한 이메일로 확인 후 답변드리겠습니다.</p>
+              <div>{serverError && <small className="form-server-error">{serverError}</small>}<button type="submit" disabled={!agreed || submitting}>{submitting ? "전송 중..." : isProjectInquiry ? "프로젝트 문의 보내기" : "지원 문의 보내기"} <span>→</span></button></div>
             </div>
-          </form>
+          </form>}
         </div>
       </section>
     </main>

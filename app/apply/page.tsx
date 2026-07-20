@@ -11,15 +11,19 @@ export default function ApplyPage() {
   const [role, setRole] = useState(roles[0]);
   const [agreed, setAgreed] = useState(false);
   const [errors, setErrors] = useState<ApplicationErrors>({});
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [serverError, setServerError] = useState("");
 
   useEffect(() => {
     const requestedRole = new URLSearchParams(window.location.search).get("role");
     if (requestedRole && roles.includes(requestedRole)) setRole(requestedRole);
   }, []);
 
-  const submitApplication = (event: FormEvent<HTMLFormElement>) => {
+  const submitApplication = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    const data = new FormData(form);
     const studentName = String(data.get("studentName") ?? "").trim();
     const email = String(data.get("email") ?? "").trim();
     const goal = String(data.get("goal") ?? "").trim();
@@ -33,6 +37,29 @@ export default function ApplyPage() {
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0 || !agreed) return;
 
+    setSubmitting(true);
+    setServerError("");
+    const response = await fetch("/api/applications", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role, studentName, email, goal, website: data.get("website") }),
+    }).catch(() => null);
+
+    if (response?.ok) {
+      setSubmitting(false);
+      setSubmitted(true);
+      form.reset();
+      setAgreed(false);
+      return;
+    }
+
+    if (response && response.status !== 503) {
+      const payload = await response.json().catch(() => ({})) as { error?: string };
+      setSubmitting(false);
+      setServerError(payload.error ?? "지원서를 보내지 못했습니다. 잠시 후 다시 시도해주세요.");
+      return;
+    }
+
     const subject = `[Native 지원] ${role} · ${studentName}`;
     const body = [
       `지원 포지션: ${role}`,
@@ -44,6 +71,7 @@ export default function ApplyPage() {
     ].join("\n");
 
     window.location.href = `mailto:${applicationEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    setSubmitting(false);
   };
 
   return (
@@ -78,7 +106,8 @@ export default function ApplyPage() {
             <p>필수 항목만 간단하고 솔직하게 작성해주세요.</p>
           </div>
 
-          <form className="application-form" onSubmit={submitApplication} noValidate>
+          {submitted ? <div className="form-success"><span>✓</span><small>APPLICATION RECEIVED</small><h3>지원서가 접수되었습니다.</h3><p>지원 결과는 공고에 안내된 기일 이후 작성한 이메일로 개별 안내합니다.</p><a href="/">Native 홈페이지로 돌아가기</a></div> : <form className="application-form" onSubmit={submitApplication} noValidate>
+            <input className="form-honeypot" type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" />
             <label className="form-field form-field-full select-field">
               <span>지원 포지션</span>
               <span className="select-shell">
@@ -133,10 +162,10 @@ export default function ApplyPage() {
             </label>
 
             <div className="submit-row form-field-full">
-              <p>공고에 안내된 기일 이후 합격자에게 이메일로 개별 안내합니다.<br />버튼을 누르면 작성한 내용이 담긴 메일 앱이 열립니다.</p>
-              <button type="submit" disabled={!agreed}>이메일 지원서 보내기 <span>→</span></button>
+              <p>공고에 안내된 기일 이후 합격자에게 이메일로 개별 안내합니다.<br />제출한 지원서는 Native 관리자만 확인할 수 있습니다.</p>
+              <div>{serverError && <small className="form-server-error">{serverError}</small>}<button type="submit" disabled={!agreed || submitting}>{submitting ? "접수 중..." : "지원서 제출하기"} <span>→</span></button></div>
             </div>
-          </form>
+          </form>}
         </div>
       </section>
     </main>
