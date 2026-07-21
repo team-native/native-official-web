@@ -2,13 +2,15 @@
 
 import Image from "next/image";
 import { FormEvent, useEffect, useState } from "react";
+import { fallbackJobs, type JobPosting } from "@/lib/content";
 
-const roles = ["iOS", "Android", "Front-End", "Design", "Back-End"];
+const fallbackRoles = fallbackJobs.filter((job) => job.status === "open").map((job) => job.title);
 const applicationEmail = "native.team@example.com";
 type ApplicationErrors = Partial<Record<"studentName" | "email" | "goal", string>>;
 
 export default function ApplyPage() {
-  const [role, setRole] = useState(roles[0]);
+  const [roles, setRoles] = useState(fallbackRoles);
+  const [role, setRole] = useState(fallbackRoles[0]);
   const [agreed, setAgreed] = useState(false);
   const [errors, setErrors] = useState<ApplicationErrors>({});
   const [submitting, setSubmitting] = useState(false);
@@ -17,7 +19,27 @@ export default function ApplyPage() {
 
   useEffect(() => {
     const requestedRole = new URLSearchParams(window.location.search).get("role");
-    if (requestedRole && roles.includes(requestedRole)) setRole(requestedRole);
+    if (requestedRole) {
+      setRoles((current) => current.includes(requestedRole) ? current : [requestedRole, ...current]);
+      setRole(requestedRole);
+    }
+
+    fetch("/api/content", { cache: "no-store" })
+      .then(async (response) => response.ok ? await response.json() as { jobs?: JobPosting[] } : null)
+      .then((payload) => {
+        const openRoles = [...new Set((payload?.jobs ?? [])
+          .filter((job) => job.status === "open")
+          .map((job) => job.title)
+          .filter(Boolean))];
+        if (openRoles.length === 0) return;
+
+        setRoles(openRoles);
+        setRole((current) => {
+          if (requestedRole && openRoles.includes(requestedRole)) return requestedRole;
+          return openRoles.includes(current) ? current : openRoles[0];
+        });
+      })
+      .catch(() => undefined);
   }, []);
 
   const submitApplication = async (event: FormEvent<HTMLFormElement>) => {
