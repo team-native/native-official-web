@@ -16,7 +16,7 @@ type FormValue = {
 const initialValue: FormValue = { name: "", grade: "", classNumber: "", studentNumber: "", email: "", creationMethod: "" };
 
 const requirements = [
-  ["01", "한눈에 알아보는 단순한 형태", "복잡한 그림보다 작은 앱 아이콘에서도 또렷하게 보이는 실루엣이 좋아요."],
+  ["01", "모던하고 심플한 스타일 (Apple 감성)", "불필요한 장식을 덜어내고 여백과 비례가 정돈된, 오래 보아도 편안한 디자인을 원해요."],
   ["02", "Book-on을 닮은 초록색", "밝고 친근한 초록을 중심으로, 흰색과 검정 배경에서도 잘 보이게 만들어주세요."],
   ["03", "책과 도서관을 연결하는 의미", "책, 독서 기록, 대출, 도서관 중 Book-on다운 이야기가 형태에 담겨야 해요."],
   ["04", "작게 보아도 같은 로고", "16px 아이콘부터 포스터까지 크기가 달라져도 형태가 무너지지 않아야 해요."],
@@ -148,18 +148,10 @@ export default function BookOnLogoContestPage() {
 
       <section className="contest-intro contest-shell" id="guide">
         <div className="contest-section-heading"><div><small>01 · 디자인 요구사항</small><h2>이 여섯 가지만<br />확실히 지켜주세요.</h2></div><p>멋있어 보이는 장식보다 Book-on을 바로 떠올릴 수 있는지,<br />작은 화면에서도 선명한지를 가장 중요하게 봅니다.</p></div>
-        <div className="contest-usage-board">
-          <div className="usage-board-copy"><small>로고는 어디에 사용되나요?</small><h3>제출한 로고는<br />Book-on의 모든 화면에<br />사용될 수 있어요.</h3><p>앱 아이콘, 시작 화면, 교내 포스터처럼 크기와 배경이 다른 곳에서도 자연스럽게 보여야 합니다.</p><div><span>APP ICON</span><span>SPLASH</span><span>PRINT</span></div></div>
-          <div className="usage-board-preview">
-            <div className="usage-app-icon"><strong>?</strong><span>APP ICON</span></div>
-            <div className="usage-phone"><Image src="/book-on.png" alt="Book-on 앱 화면 적용 예시" fill sizes="260px" unoptimized /><i><b>YOUR<br />LOGO</b></i></div>
-            <div className="usage-poster"><small>BOOK-ON</small><strong>읽고,<br />기록하고,<br />이어가다.</strong><span>YOUR LOGO</span></div>
-          </div>
-        </div>
         <div className="requirement-grid">
           {requirements.map(([number, title, copy], index) => <article key={number}>
             <div className={`brief-example example-${index + 1}`} aria-hidden="true">
-              {index === 0 && <><span>복잡한 그림</span><i>→</i><b>선명한 형태</b></>}
+              {index === 0 && <><span>불필요한 장식</span><i>→</i><b>정돈된 디자인</b></>}
               {index === 1 && <><span>#8FD323</span><i /><i /><i /></>}
               {index === 2 && <><span>책</span><span>독서 기록</span><span>도서관</span></>}
               {index === 3 && <><i>16</i><i>48</i><i>128</i></>}
