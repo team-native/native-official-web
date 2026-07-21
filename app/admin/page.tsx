@@ -6,11 +6,12 @@ import { useRouter } from "next/navigation";
 import { JobPosting, Project } from "@/lib/content";
 import { getBrowserSupabase } from "@/lib/supabase-browser";
 
-type Tab = "overview" | "projects" | "jobs" | "applications" | "inquiries" | "access";
+type Tab = "overview" | "projects" | "jobs" | "contest" | "applications" | "inquiries" | "access";
 type Application = { id: string; role: string; student_name: string; email: string; goal: string; status: string; created_at: string };
 type Inquiry = { id: string; topic: string; student_name: string; email: string; message: string; status: string; created_at: string };
 type AccessRequest = { id: string; user_id: string; email: string; display_name: string; status: "pending" | "approved" | "rejected"; requested_at: string; reviewed_at: string | null };
-type AdminData = { admin: { email: string; displayName: string; role: "owner" | "admin" }; projects: Project[]; jobs: JobPosting[]; applications: Application[]; inquiries: Inquiry[]; accessRequests: AccessRequest[] };
+type LogoContestSubmission = { id: string; name: string; grade: number; class_number: number; student_number: number; school_email: string; file_name: string; file_size: number; creation_method: "direct" | "ai"; status: "submitted" | "reviewing" | "winner" | "rejected"; created_at: string; preview_url: string };
+type AdminData = { admin: { email: string; displayName: string; role: "owner" | "admin" }; projects: Project[]; jobs: JobPosting[]; logoContestSubmissions: LogoContestSubmission[]; applications: Application[]; inquiries: Inquiry[]; accessRequests: AccessRequest[] };
 
 const emptyProject: Project = { slug: "", name: "", type: "", description: "", summary: "", content: "", logo: "/native-logo.png", images: [], tone: "bookon", visual: "web-screen", tags: [], sortOrder: 0, published: true };
 const emptyJob: JobPosting = { slug: "", department: "", title: "", summary: "", description: "", priority: false, status: "draft", closeDate: null, sortOrder: 0 };
@@ -59,6 +60,7 @@ export default function AdminPage() {
   const counts = useMemo(() => ({
     projects: data?.projects.filter((item) => item.published).length ?? 0,
     jobs: data?.jobs.filter((item) => item.status === "open").length ?? 0,
+    contest: data?.logoContestSubmissions.filter((item) => item.status === "submitted").length ?? 0,
     applications: data?.applications.filter((item) => item.status === "new").length ?? 0,
     inquiries: data?.inquiries.filter((item) => item.status === "new").length ?? 0,
     access: data?.accessRequests.filter((item) => item.status === "pending").length ?? 0,
@@ -76,6 +78,7 @@ export default function AdminPage() {
           <AdminNav active={tab === "overview"} onClick={() => setTab("overview")} icon="⌂" label="대시보드" />
           <AdminNav active={tab === "projects"} onClick={() => setTab("projects")} icon="◇" label="프로젝트" count={data.projects.length} />
           <AdminNav active={tab === "jobs"} onClick={() => setTab("jobs")} icon="＋" label="지원 공고" count={counts.jobs} />
+          <AdminNav active={tab === "contest"} onClick={() => setTab("contest")} icon="▣" label="로고 공모전" count={counts.contest} />
           <AdminNav active={tab === "applications"} onClick={() => setTab("applications")} icon="▤" label="지원서" count={counts.applications} />
           <AdminNav active={tab === "inquiries"} onClick={() => setTab("inquiries")} icon="◌" label="문의함" count={counts.inquiries} />
           {data.admin.role === "owner" && <AdminNav active={tab === "access"} onClick={() => setTab("access")} icon="◎" label="접근 승인" count={counts.access} />}
@@ -84,12 +87,13 @@ export default function AdminPage() {
       </aside>
 
       <section className="admin-main">
-        <header className="admin-topbar"><div><small>NATIVE ADMIN</small><h1>{tabTitle(tab)}</h1></div><div><a href="/" target="_blank">홈페이지 보기 ↗</a><span>{new Intl.DateTimeFormat("ko-KR", { dateStyle: "long" }).format(new Date())}</span></div></header>
+        <header className="admin-topbar"><div><small>NATIVE ADMIN</small><h1>{tabTitle(tab)}</h1></div><div><a href="/book-on-logo-contest" target="_blank">공모전 보기 ↗</a><a href="/" target="_blank">홈페이지 보기 ↗</a><span>{new Intl.DateTimeFormat("ko-KR", { dateStyle: "long" }).format(new Date())}</span></div></header>
         {notice && <div className="admin-notice">✓ {notice}<button onClick={() => setNotice("")}>×</button></div>}
 
         {tab === "overview" && <Overview data={data} counts={counts} go={setTab} />}
         {tab === "projects" && <ProjectsPanel projects={data.projects} onNew={() => setProjectEditor({ ...emptyProject, sortOrder: data.projects.length + 1 })} onEdit={setProjectEditor} onDelete={(id) => confirm("이 프로젝트를 삭제할까요?") && mutate("projects", "delete", { id }).catch((reason) => setError(reason.message))} />}
         {tab === "jobs" && <JobsPanel jobs={data.jobs} onNew={() => setJobEditor({ ...emptyJob, sortOrder: data.jobs.length + 1 })} onEdit={setJobEditor} onDelete={(id) => confirm("이 지원 공고를 삭제할까요?") && mutate("jobs", "delete", { id }).catch((reason) => setError(reason.message))} />}
+        {tab === "contest" && <LogoContestPanel items={data.logoContestSubmissions} onStatus={(id, status) => mutate("logo-contest", "status", { id, status }).catch((reason) => setError(reason.message))} onDelete={(id) => confirm("이 공모전 작품과 파일을 영구 삭제할까요?") && mutate("logo-contest", "delete", { id }).catch((reason) => setError(reason.message))} />}
         {tab === "applications" && <InboxPanel type="applications" items={data.applications} onStatus={(id, status) => mutate("applications", "status", { id, status }).catch((reason) => setError(reason.message))} onDelete={(id) => confirm("지원서를 영구 삭제할까요?") && mutate("applications", "delete", { id }).catch((reason) => setError(reason.message))} />}
         {tab === "inquiries" && <InboxPanel type="inquiries" items={data.inquiries} onStatus={(id, status) => mutate("inquiries", "status", { id, status }).catch((reason) => setError(reason.message))} onDelete={(id) => confirm("문의를 영구 삭제할까요?") && mutate("inquiries", "delete", { id }).catch((reason) => setError(reason.message))} />}
         {tab === "access" && data.admin.role === "owner" && <AccessPanel requests={data.accessRequests} onReview={(id, status) => mutate("access", "review", { id, status }).catch((reason) => setError(reason.message))} />}
@@ -106,12 +110,13 @@ function AdminNav({ active, onClick, icon, label, count }: { active: boolean; on
 }
 
 function Overview({ data, counts, go }: { data: AdminData; counts: Record<string, number>; go: (tab: Tab) => void }) {
-  const recent = [...data.applications.map((item) => ({ type: "지원서", title: `${item.student_name} · ${item.role}`, date: item.created_at })), ...data.inquiries.map((item) => ({ type: "문의", title: `${item.student_name} · ${item.topic}`, date: item.created_at }))].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 6);
+  const recent = [...data.logoContestSubmissions.map((item) => ({ type: "공모전", title: `${item.name} · ${item.file_name}`, date: item.created_at })), ...data.applications.map((item) => ({ type: "지원서", title: `${item.student_name} · ${item.role}`, date: item.created_at })), ...data.inquiries.map((item) => ({ type: "문의", title: `${item.student_name} · ${item.topic}`, date: item.created_at }))].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 6);
   return <div className="admin-dashboard">
     <section className="admin-welcome"><div><small>CONTROL THE EXPERIENCE</small><h2>홈페이지의 오늘을<br />한눈에 확인하세요.</h2><p>공개 중인 콘텐츠와 새로 도착한 지원서·문의를 확인할 수 있습니다.</p></div><div className="admin-welcome-n">N</div></section>
     <section className="admin-stats">
       <button onClick={() => go("projects")}><small>공개 프로젝트</small><strong>{counts.projects}</strong><span>프로젝트 관리 →</span></button>
       <button onClick={() => go("jobs")}><small>진행 중 공고</small><strong>{counts.jobs}</strong><span>공고 관리 →</span></button>
+      <button onClick={() => go("contest")}><small>새 공모전 작품</small><strong>{counts.contest}</strong><span>작품 심사 →</span></button>
       <button onClick={() => go("applications")}><small>새 지원서</small><strong>{counts.applications}</strong><span>지원서 보기 →</span></button>
       <button onClick={() => go("inquiries")}><small>새 문의</small><strong>{counts.inquiries}</strong><span>문의 확인 →</span></button>
     </section>
@@ -125,6 +130,14 @@ function ProjectsPanel({ projects, onNew, onEdit, onDelete }: { projects: Projec
 
 function JobsPanel({ jobs, onNew, onEdit, onDelete }: { jobs: JobPosting[]; onNew: () => void; onEdit: (item: JobPosting) => void; onDelete: (id: string) => void }) {
   return <section className="admin-panel"><div className="admin-section-head"><div><small>RECRUIT</small><h2>지원 공고 관리</h2><p>모집 포지션, 마감일과 공개 상태를 관리합니다.</p></div><button onClick={onNew}>새 지원 공고 <span>＋</span></button></div><div className="admin-job-list">{jobs.map((job) => <article key={job.id || job.slug}><div><small>{job.department}</small><h3>{job.title}</h3><p>{job.summary}</p></div><div className="admin-job-meta"><b className={`status-${job.status}`}>{job.status === "open" ? "모집 중" : job.status === "closed" ? "마감" : "임시 저장"}</b>{job.priority && <span>우대 모집</span>}<time>{job.closeDate ? `${job.closeDate} 마감` : "상시 모집"}</time></div><div className="admin-row-actions"><button onClick={() => onEdit(job)}>편집</button><button className="danger" onClick={() => job.id && onDelete(job.id)}>삭제</button></div></article>)}</div></section>;
+}
+
+function LogoContestPanel({ items, onStatus, onDelete }: { items: LogoContestSubmission[]; onStatus: (id: string, status: string) => void; onDelete: (id: string) => void }) {
+  const statuses = [["submitted", "새 작품"], ["reviewing", "심사 중"], ["winner", "수상작"], ["rejected", "심사 제외"]];
+  return <section className="admin-panel"><div className="admin-section-head"><div><small>BOOK-ON LOGO CONTEST</small><h2>공모전 제출 작품</h2><p>제출된 PNG 원본을 확인하고 심사 상태를 관리합니다.</p></div><a className="admin-contest-link" href="/book-on-logo-contest" target="_blank">공모전 페이지 ↗</a></div><div className="admin-contest-list">{items.length ? items.map((item) => <article className="admin-contest-card" key={item.id}>
+    <a className="admin-contest-preview" href={item.preview_url || undefined} target="_blank" aria-label={`${item.name} 제출 로고 원본 보기`} style={item.preview_url ? { backgroundImage: `url(${item.preview_url})` } : undefined}><span>{item.preview_url ? "원본 크게 보기 ↗" : "미리보기 없음"}</span></a>
+    <div className="admin-contest-info"><div><span className={`contest-status status-${item.status}`}>{statuses.find(([value]) => value === item.status)?.[1]}</span><time>{formatDate(item.created_at)}</time></div><h3>{item.name}</h3><p>{item.grade}학년 {item.class_number}반 {item.student_number}번</p><a href={`mailto:${item.school_email}`}>{item.school_email}</a><dl><div><dt>제작 방식</dt><dd>{item.creation_method === "ai" ? "AI 사용" : "직접 제작"}</dd></div><div><dt>파일</dt><dd>{formatBytes(item.file_size)} · PNG</dd></div></dl><div className="admin-contest-actions"><select value={item.status} onChange={(event) => onStatus(item.id, event.target.value)}>{statuses.map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select><button className="danger" onClick={() => onDelete(item.id)}>삭제</button></div></div>
+  </article>) : <div className="admin-empty">아직 제출된 작품이 없습니다.</div>}</div></section>;
 }
 
 function InboxPanel({ type, items, onStatus, onDelete }: { type: "applications" | "inquiries"; items: (Application | Inquiry)[]; onStatus: (id: string, status: string) => void; onDelete: (id: string) => void }) {
@@ -175,4 +188,5 @@ function Field({ label, value, onChange, placeholder, type = "text", required, w
 function TextArea({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) { return <label className="admin-field wide"><span>{label}</span><textarea value={value} onChange={(event) => onChange(event.target.value)} /></label>; }
 function split(value: string) { return value.split(",").map((item) => item.trim()).filter(Boolean); }
 function formatDate(value: string) { return new Intl.DateTimeFormat("ko-KR", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value)); }
-function tabTitle(tab: Tab) { return ({ overview: "대시보드", projects: "프로젝트", jobs: "지원 공고", applications: "지원서", inquiries: "문의함", access: "접근 승인" })[tab]; }
+function formatBytes(value: number) { return `${(value / 1024 / 1024).toFixed(2)}MB`; }
+function tabTitle(tab: Tab) { return ({ overview: "대시보드", projects: "프로젝트", jobs: "지원 공고", contest: "Book-on 로고 공모전", applications: "지원서", inquiries: "문의함", access: "접근 승인" })[tab]; }

@@ -2,28 +2,35 @@ import { jobFromRow, projectFromRow } from "@/lib/content";
 import { jsonError, requireAdmin } from "@/lib/supabase-server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-const allowedResources = ["projects", "jobs", "applications", "inquiries", "access"] as const;
+const allowedResources = ["projects", "jobs", "logo-contest", "applications", "inquiries", "access"] as const;
 type Resource = (typeof allowedResources)[number];
 
 export async function GET(request: Request) {
   const auth = await requireAdmin(request);
   if (!auth) return jsonError("관리자 로그인이 필요합니다.", 401);
 
-  const [projects, jobs, applications, inquiries, accessRequests] = await Promise.all([
+  const [projects, jobs, logoContest, applications, inquiries, accessRequests] = await Promise.all([
     auth.client.from("projects").select("*").order("sort_order"),
     auth.client.from("job_postings").select("*").order("sort_order"),
+    auth.client.from("logo_contest_submissions").select("*").order("created_at", { ascending: false }),
     auth.client.from("applications").select("*").order("created_at", { ascending: false }),
     auth.client.from("inquiries").select("*").order("created_at", { ascending: false }),
     auth.admin.role === "owner" ? auth.client.from("admin_access_requests").select("*").order("requested_at", { ascending: false }) : Promise.resolve({ data: [], error: null }),
   ]);
 
-  const error = projects.error || jobs.error || applications.error || inquiries.error || accessRequests.error;
+  const error = projects.error || jobs.error || logoContest.error || applications.error || inquiries.error || accessRequests.error;
   if (error) return jsonError("관리 데이터를 불러오지 못했습니다.", 500);
+
+  const logoContestSubmissions = await Promise.all((logoContest.data ?? []).map(async (submission) => {
+    const { data } = await auth.client.storage.from("bookon-logo-contest").createSignedUrl(submission.file_path, 3600);
+    return { ...submission, preview_url: data?.signedUrl ?? "" };
+  }));
 
   return Response.json({
     admin: { email: auth.user.email, displayName: auth.admin.display_name, role: auth.admin.role },
     projects: (projects.data ?? []).map(projectFromRow),
     jobs: (jobs.data ?? []).map(jobFromRow),
+    logoContestSubmissions,
     applications: applications.data ?? [],
     inquiries: inquiries.data ?? [],
     accessRequests: accessRequests.data ?? [],
@@ -97,6 +104,18 @@ export async function POST(request: Request) {
     if (!payload.slug || !payload.department || !payload.title || !payload.summary) return jsonError("공고 제목, 주소, 직군, 요약은 필수입니다.");
     const { error } = await auth.client.from("job_postings").upsert(payload);
     if (error) return jsonError(error.message, 500);
+  }
+
+  if (resource === "logo-contest") {
+    if (action === "delete") {
+      const { data: submission, error: findError } = await auth.client.from("logo_contest_submissions").select("file_path").eq("id", data.id).maybeSingle();
+      if (findError || !submission) return jsonError("제출 작품을 찾지 못했습니다.", 404);
+      await auth.client.storage.from("bookon-logo-contest").remove([submission.file_path]);
+      return remove(auth.client, "logo_contest_submissions", data.id);
+    }
+    if (action !== "status" || !["submitted", "reviewing", "winner", "rejected"].includes(String(data.status))) return jsonError("지원하지 않는 심사 작업입니다.");
+    const { error } = await auth.client.from("logo_contest_submissions").update({ status: data.status }).eq("id", data.id);
+    if (error) return jsonError("심사 상태를 저장하지 못했습니다.", 500);
   }
 
   if (resource === "applications" || resource === "inquiries") {

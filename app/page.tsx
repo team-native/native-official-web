@@ -71,6 +71,7 @@ export default function Home() {
           <a href="#nativelab" onClick={closeMenu}>NativeLab</a>
           <a href="#culture" onClick={closeMenu}>개발 문화</a>
           <a href="#benefits" onClick={closeMenu}>팀 혜택</a>
+          <a href="/book-on-logo-contest" onClick={closeMenu}>Book-on 공모전</a>
           <a className="nav-recruit" href="#recruit" onClick={closeMenu}><i />지원 공고</a>
         </nav>
         <a className="header-cta" href="#recruit">지원 공고 <span>↗</span></a>
