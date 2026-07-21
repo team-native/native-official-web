@@ -38,10 +38,35 @@ export default function BookOnLogoContestPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [complete, setComplete] = useState(false);
+  const [showRecruitPopup, setShowRecruitPopup] = useState(false);
 
   useEffect(() => () => { if (preview) URL.revokeObjectURL(preview); }, [preview]);
+  useEffect(() => {
+    const today = new Date().toLocaleDateString("en-CA");
+    if (window.localStorage.getItem("native-recruit-popup-hidden-date") !== today) setShowRecruitPopup(true);
+  }, []);
+  useEffect(() => {
+    if (!showRecruitPopup) return;
+    const previousOverflow = document.body.style.overflow;
+    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === "Escape") dismissRecruitPopup(); };
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [showRecruitPopup]);
 
   const studentInfo = useMemo(() => [value.grade, value.classNumber, value.studentNumber].filter(Boolean).join(" · "), [value]);
+
+  const dismissRecruitPopup = () => {
+    setShowRecruitPopup(false);
+  };
+
+  const hideRecruitPopupToday = () => {
+    window.localStorage.setItem("native-recruit-popup-hidden-date", new Date().toLocaleDateString("en-CA"));
+    setShowRecruitPopup(false);
+  };
 
   const update = (key: keyof FormValue, next: string) => {
     setValue((current) => ({ ...current, [key]: next }));
@@ -127,6 +152,31 @@ export default function BookOnLogoContestPage() {
 
   return (
     <main className="contest-page">
+      {showRecruitPopup && (
+        <div className="recruit-popup-backdrop" role="presentation">
+          <section className="recruit-popup" role="dialog" aria-modal="true" aria-labelledby="recruit-popup-title">
+            <button className="recruit-popup-close" type="button" onClick={dismissRecruitPopup} aria-label="채용 안내 닫기">×</button>
+            <div className="recruit-popup-mark" aria-hidden="true"><Image src="/native-logo.png" alt="" fill sizes="64px" unoptimized /></div>
+            <div className="recruit-popup-copy">
+              <small><i /> NATIVE OPEN ROLES</small>
+              <h2 id="recruit-popup-title">지금, 함께 만들<br />사람을 찾고 있어요.</h2>
+              <p>Native는 현재 <b>디자인·프론트엔드·게임 개발</b> 직군의 지원을 우선적으로 받고 있습니다.</p>
+              <div className="recruit-popup-roles" aria-label="우선 모집 직군"><span>Design</span><span>Front-End</span><span>Game Development</span></div>
+              <div className="recruit-popup-benefits" aria-label="Native 활동 혜택">
+                <div><i>01</i><span><b>프로젝트 활동비 지원</b><small>좋은 아이디어를 실제 제품으로 만드는 데 필요한 비용을 지원해요.</small></span></div>
+                <div><i>02</i><span><b>팀원 모집 지원</b><small>프로젝트에 필요한 직군과 인원을 함께 찾고 팀 구성을 도와드려요.</small></span></div>
+                <div><i>03</i><span><b>팀 아이덴티티 제공</b><small>Native 구성원으로 활동할 수 있는 공식 팀 아이템을 제공해요.</small></span></div>
+              </div>
+              <p className="recruit-popup-notice"><b>지원 전 확인</b> 합류 시 2학기 전공동아리와 소속 팀을 Native로 변경해야 합니다.</p>
+            </div>
+            <div className="recruit-popup-actions">
+              <a href="/#recruit" onClick={dismissRecruitPopup}>Native 지원 공고 보기 <span>→</span></a>
+              <button type="button" onClick={dismissRecruitPopup}>닫기</button>
+              <button className="recruit-popup-today" type="button" onClick={hideRecruitPopupToday}>오늘 보지 않기</button>
+            </div>
+          </section>
+        </div>
+      )}
       <header className="contest-header">
         <a className="contest-brand" href="/" aria-label="Native 홈페이지"><span><Image src="/native-logo.png" alt="" fill sizes="36px" unoptimized /></span><b>Native</b></a>
         <div className="contest-header-label"><i /> BOOK-ON 로고 공모전</div>
@@ -142,7 +192,6 @@ export default function BookOnLogoContestPage() {
           <div className="contest-hero-facts"><span><b>마감</b> 7월 25일 23:59</span><span><b>형식</b> PNG · 최대 10MB</span><span><b>제출</b> 1인 1작품</span></div>
         </div>
         <div className="contest-hero-product">
-          <div className="hero-product-head"><span><i /> BOOK-ON APP</span></div>
           <div className="hero-logo-placeholder"><strong>?</strong><b>여러분의 로고가 들어갑니다</b></div>
           <div className="hero-phone hero-phone-home"><Image src="/book-on.png" alt="Book-on 홈 화면" fill sizes="260px" unoptimized /></div>
           <div className="hero-phone hero-phone-detail"><Image src="/bookon-detail.png" alt="Book-on 도서 상세 화면" fill sizes="220px" unoptimized /></div>
