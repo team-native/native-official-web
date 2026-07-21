@@ -4,7 +4,7 @@ import Image from "next/image";
 import { FormEvent, useEffect, useState } from "react";
 
 const contactEmail = "native.team@example.com";
-const topics = ["지원 포지션", "모집 일정", "팀 문화", "프로젝트", "기타 문의"];
+const topics = ["지원 전공", "모집 일정", "팀 문화", "프로젝트", "기타 문의"];
 type ContactErrors = Partial<Record<"studentName" | "email" | "question", string>>;
 
 export default function ContactPage() {
@@ -91,7 +91,7 @@ export default function ContactPage() {
         <div className="apply-intro contact-intro">
           <div className="apply-kicker">{isProjectInquiry ? "NativeLab 프로젝트 문의" : "Native 지원 문의"}</div>
           <h1>{isProjectInquiry ? <>만들고 싶은 제품을<br />편하게 들려주세요.</> : <>궁금한 점을<br />편하게 남겨주세요.</>}</h1>
-          <p>{isProjectInquiry ? "아이디어의 현재 단계와 해결하고 싶은 문제를 알려주시면 함께 만들 수 있는 방법을 안내합니다." : "지원 포지션, 모집 일정, 팀 문화와 프로젝트에 관한 질문을 받습니다."}</p>
+          <p>{isProjectInquiry ? "아이디어의 현재 단계와 해결하고 싶은 문제를 알려주시면 함께 만들 수 있는 방법을 안내합니다." : "지원 전공, 모집 일정, 팀 문화와 프로젝트에 관한 질문을 받습니다."}</p>
 
           <div className="apply-role-card">
             <span>RESPONSE</span>

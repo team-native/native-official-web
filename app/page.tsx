@@ -18,7 +18,7 @@ const principles = [
 
 const benefits = [
   { number: "01", title: "프로젝트 제작비", copy: "아이디어를 검증하고 실제로 출시하는 데 필요한 비용을 지원해요.", icon: "funding", visualTitle: "만드는 데 필요한 비용", visualBadge: "아이디어 검증 · 출시" },
-  { number: "02", title: "팀 빌딩 지원", copy: "프로젝트에 필요한 직군과 인원을 찾고 함께할 팀을 꾸릴 수 있도록 도와요.", icon: "people", visualTitle: "함께할 동료를 연결", visualBadge: "필요 직군 · 팀 구성" },
+  { number: "02", title: "팀 빌딩 지원", copy: "프로젝트에 필요한 전공과 인원을 찾고 함께할 팀을 꾸릴 수 있도록 도와요.", icon: "people", visualTitle: "함께할 동료를 연결", visualBadge: "필요 전공 · 팀 구성" },
   { number: "03", title: "팀 아이덴티티 키트", copy: "Native의 정체성을 함께 느낄 수 있는 웰컴 키트와 활동 물품을 제공해요.", icon: "kit", visualTitle: "팀으로 움직이는 물건", visualBadge: "웰컴 키트 · 활동 물품" },
   { number: "04", title: "성장 도구 지원", copy: "필요한 도서, 강의, 개발 도구를 팀의 성장을 위해 지원해요.", icon: "book", visualTitle: "배우고 만드는 도구", visualBadge: "도서 · 강의 · 개발 도구" },
 ];
@@ -97,7 +97,7 @@ export default function Home() {
       </section>
 
       <aside className="floating-recruit" aria-label="Native 지원 안내">
-        <div><i /> 현재 {openings.length}개 직군 지원 접수 중</div>
+        <div><i /> 현재 {openings.length}개 전공 지원 접수 중</div>
         <a href="#recruit">지원 공고 보기 <span>→</span></a>
       </aside>
 
@@ -121,7 +121,7 @@ export default function Home() {
             <div className="pillar-label">01 / OWN THE IDEA</div>
             <div className="pillar-monogram" aria-hidden="true">N</div>
             <h3>아이디어를 내면,<br />직접 프로젝트를 이끌 수 있어요.</h3>
-            <p>직군이나 경력과 상관없이 제안한 사람이 제품의 방향을 정합니다. 팀은 허락을 기다리는 곳이 아니라, 좋은 아이디어가 실제로 출시되도록 함께 만드는 동료입니다.</p>
+            <p>전공이나 경험과 상관없이 제안한 사람이 제품의 방향을 정합니다. 팀은 허락을 기다리는 곳이 아니라, 좋은 아이디어가 실제로 출시되도록 함께 만드는 동료입니다.</p>
             <div className="pillar-flow" aria-label="아이디어가 제품이 되는 과정"><span>IDEA</span><i>→</i><span>LEAD</span><i>→</i><span>PRODUCT</span></div>
           </article>
           <article className="brand-pillar native-pillar">
@@ -231,24 +231,24 @@ export default function Home() {
         <div className="recruit-panel">
           <div className="recruit-head">
             <div className="section-kicker"><span>05</span> NATIVE 지원 공고</div>
-            <h2>지금 지원할 수 있는<br />포지션을 확인하세요.</h2>
+            <h2>지금 지원할 수 있는<br />전공을 확인하세요.</h2>
             <p>아이디어를 직접 이끌고, 플랫폼에 가장 자연스러운 경험을 끝까지 구현할 동료를 모집합니다.</p>
             <div className="recruit-points">
-              <span><b>{openings.length}</b> 모집 직군</span>
+              <span><b>{openings.length}</b> 모집 전공</span>
               <span><b>{openings.filter((opening) => opening.priority).length}</b> 우대 모집</span>
               <span><b>19</b> 팀 멤버</span>
             </div>
           </div>
 
           <div className="job-board">
-            <div className="job-board-title"><h3>모집 포지션</h3><span>{openings.length}개 직군 · 우대 모집 공고 포함</span></div>
+            <div className="job-board-title"><h3>모집 전공</h3><span>{openings.length}개 전공 · 우대 모집 공고 포함</span></div>
             <div className="job-grid">
               {openings.map((opening) => (
-                <a className={opening.priority ? "job-card featured" : "job-card"} href={`/apply?role=${encodeURIComponent(opening.title)}`} key={opening.title}>
-                  <div className="job-top"><small>{opening.department}</small><b>{opening.priority ? "우대 모집" : "모집 중"}</b></div>
+                <a className={opening.priority ? "job-card featured" : "job-card"} href={`/recruit/${encodeURIComponent(opening.slug)}`} key={opening.title}>
+                  <div className="job-top"><small>전공</small><b>{opening.priority ? "우대 모집" : "모집 중"}</b></div>
                   <h4>{opening.title}</h4>
                   <p>{opening.summary}</p>
-                  <div className="job-action">지원서 작성하기 <span>↗</span></div>
+                  <div className="job-action">상세 공고 보기 <span>↗</span></div>
                 </a>
               ))}
             </div>
@@ -267,7 +267,7 @@ export default function Home() {
           <p className="result-notice">지원 결과는 공고에 안내된 기일 이후 검토되며, 합격자에게 지원서에 작성한 이메일로 개별 안내합니다.</p>
 
           <div className="recruit-foot">
-            <div><strong>지원 전에 궁금한 점이 있나요?</strong><small>포지션과 팀 문화에 관한 질문도 편하게 보내주세요.</small></div>
+            <div><strong>지원 전에 궁금한 점이 있나요?</strong><small>전공과 팀 문화에 관한 질문도 편하게 보내주세요.</small></div>
             <a href="/contact">지원 문의하기 <span>→</span></a>
           </div>
         </div>

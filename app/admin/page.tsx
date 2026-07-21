@@ -14,7 +14,7 @@ type LogoContestSubmission = { id: string; name: string; grade: number; class_nu
 type AdminData = { admin: { email: string; displayName: string; role: "owner" | "admin" }; projects: Project[]; jobs: JobPosting[]; logoContestSubmissions: LogoContestSubmission[]; applications: Application[]; inquiries: Inquiry[]; accessRequests: AccessRequest[] };
 
 const emptyProject: Project = { slug: "", name: "", type: "", description: "", summary: "", content: "", logo: "/native-logo.png", images: [], tone: "bookon", visual: "web-screen", tags: [], sortOrder: 0, published: true };
-const emptyJob: JobPosting = { slug: "", department: "", title: "", summary: "", description: "", priority: false, status: "draft", closeDate: null, sortOrder: 0 };
+const emptyJob: JobPosting = { slug: "", department: "전공", title: "", summary: "", description: "", priority: false, status: "draft", closeDate: null, sortOrder: 0 };
 
 export default function AdminPage() {
   const router = useRouter();
@@ -129,7 +129,7 @@ function ProjectsPanel({ projects, onNew, onEdit, onDelete }: { projects: Projec
 }
 
 function JobsPanel({ jobs, onNew, onEdit, onDelete }: { jobs: JobPosting[]; onNew: () => void; onEdit: (item: JobPosting) => void; onDelete: (id: string) => void }) {
-  return <section className="admin-panel"><div className="admin-section-head"><div><small>RECRUIT</small><h2>지원 공고 관리</h2><p>모집 포지션, 마감일과 공개 상태를 관리합니다.</p></div><button onClick={onNew}>새 지원 공고 <span>＋</span></button></div><div className="admin-job-list">{jobs.map((job) => <article key={job.id || job.slug}><div><small>{job.department}</small><h3>{job.title}</h3><p>{job.summary}</p></div><div className="admin-job-meta"><b className={`status-${job.status}`}>{job.status === "open" ? "모집 중" : job.status === "closed" ? "마감" : "임시 저장"}</b>{job.priority && <span>우대 모집</span>}<time>{job.closeDate ? `${job.closeDate} 마감` : "상시 모집"}</time></div><div className="admin-row-actions"><button onClick={() => onEdit(job)}>편집</button><button className="danger" onClick={() => job.id && onDelete(job.id)}>삭제</button></div></article>)}</div></section>;
+  return <section className="admin-panel"><div className="admin-section-head"><div><small>RECRUIT</small><h2>지원 공고 관리</h2><p>모집 전공, 마감일과 공개 상태를 관리합니다.</p></div><button onClick={onNew}>새 지원 공고 <span>＋</span></button></div><div className="admin-job-list">{jobs.map((job) => <article key={job.id || job.slug}><div><small>전공</small><h3>{job.title}</h3><p>{job.summary}</p></div><div className="admin-job-meta"><b className={`status-${job.status}`}>{job.status === "open" ? "모집 중" : job.status === "closed" ? "마감" : "임시 저장"}</b>{job.priority && <span>우대 모집</span>}<time>{job.closeDate ? `${job.closeDate} 마감` : "상시 모집"}</time></div><div className="admin-row-actions">{job.status === "open" && <a href={`/recruit/${encodeURIComponent(job.slug)}`} target="_blank">보기</a>}<button onClick={() => onEdit(job)}>편집</button><button className="danger" onClick={() => job.id && onDelete(job.id)}>삭제</button></div></article>)}</div></section>;
 }
 
 function LogoContestPanel({ items, onStatus, onDelete }: { items: LogoContestSubmission[]; onStatus: (id: string, status: string) => void; onDelete: (id: string) => void }) {
@@ -171,10 +171,13 @@ function ProjectEditor({ project, onClose, onSave }: { project: Project; onClose
 
 function JobEditor({ job, onClose, onSave }: { job: JobPosting; onClose: () => void; onSave: (item: JobPosting) => void }) {
   const [value, setValue] = useState(job);
-  return <div className="admin-modal-backdrop"><form className="admin-editor" onSubmit={(event) => { event.preventDefault(); onSave(value); }}><header><div><small>RECRUIT EDITOR</small><h2>{job.id ? "지원 공고 편집" : "새 지원 공고"}</h2></div><button type="button" onClick={onClose}>×</button></header><div className="admin-editor-grid">
-    <Field label="포지션명" value={value.title} onChange={(title) => setValue({ ...value, title })} required />
-    <Field label="주소 슬러그" value={value.slug} onChange={(slug) => setValue({ ...value, slug })} placeholder="ios" required />
-    <Field label="직군" value={value.department} onChange={(department) => setValue({ ...value, department })} placeholder="NATIVE APP" required />
+  const save = (event: FormEvent) => {
+    event.preventDefault();
+    const title = value.title.trim();
+    onSave({ ...value, title, slug: value.slug.trim() || jobSlug(title), department: "전공" });
+  };
+  return <div className="admin-modal-backdrop"><form className="admin-editor" onSubmit={save}><header><div><small>RECRUIT EDITOR</small><h2>{job.id ? "지원 공고 편집" : "새 지원 공고"}</h2></div><button type="button" onClick={onClose}>×</button></header><div className="admin-editor-grid">
+    <Field label="전공명" value={value.title} onChange={(title) => setValue({ ...value, title })} placeholder="예: 게임 개발" required />
     <Field label="정렬 순서" type="number" value={String(value.sortOrder)} onChange={(sortOrder) => setValue({ ...value, sortOrder: Number(sortOrder) })} />
     <Field wide label="공고 요약" value={value.summary} onChange={(summary) => setValue({ ...value, summary })} required />
     <TextArea label="상세 설명" value={value.description} onChange={(description) => setValue({ ...value, description })} />
@@ -187,6 +190,7 @@ function JobEditor({ job, onClose, onSave }: { job: JobPosting; onClose: () => v
 function Field({ label, value, onChange, placeholder, type = "text", required, wide }: { label: string; value: string; onChange: (value: string) => void; placeholder?: string; type?: string; required?: boolean; wide?: boolean }) { return <label className={`admin-field ${wide ? "wide" : ""}`}><span>{label}{required && <b>*</b>}</span><input type={type} value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} required={required} /></label>; }
 function TextArea({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) { return <label className="admin-field wide"><span>{label}</span><textarea value={value} onChange={(event) => onChange(event.target.value)} /></label>; }
 function split(value: string) { return value.split(",").map((item) => item.trim()).filter(Boolean); }
+function jobSlug(value: string) { return value.toLowerCase().replace(/\s+/g, "-").replace(/[^\p{L}\p{N}-]/gu, "").replace(/-+/g, "-").replace(/^-|-$/g, "") || `major-${Date.now()}`; }
 function formatDate(value: string) { return new Intl.DateTimeFormat("ko-KR", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value)); }
 function formatBytes(value: number) { return `${(value / 1024 / 1024).toFixed(2)}MB`; }
 function tabTitle(tab: Tab) { return ({ overview: "대시보드", projects: "프로젝트", jobs: "지원 공고", contest: "Book-on 로고 공모전", applications: "지원서", inquiries: "문의함", access: "접근 승인" })[tab]; }

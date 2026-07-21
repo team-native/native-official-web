@@ -84,7 +84,7 @@ export default function ApplyPage() {
 
     const subject = `[Native 지원] ${role} · ${studentName}`;
     const body = [
-      `지원 포지션: ${role}`,
+      `지원 전공: ${role}`,
       `학번과 이름: ${studentName}`,
       `이메일: ${email}`,
       "",
@@ -113,7 +113,7 @@ export default function ApplyPage() {
           <p>복잡한 서류보다 Native에 지원한 이유와 팀에서 이루고 싶은 목표를 궁금해합니다.</p>
 
           <div className="apply-role-card">
-            <span>선택한 포지션</span>
+            <span>선택한 전공</span>
             <strong>{role}</strong>
             <small>지원 → 모집 마감 → 이메일 합격 안내 → 합류 미팅</small>
           </div>
@@ -131,7 +131,7 @@ export default function ApplyPage() {
           {submitted ? <div className="form-success"><span>✓</span><small>APPLICATION RECEIVED</small><h3>지원서가 접수되었습니다.</h3><p>지원 결과는 공고에 안내된 기일 이후 작성한 이메일로 개별 안내합니다.</p><a href="/">Native 홈페이지로 돌아가기</a></div> : <form className="application-form" onSubmit={submitApplication} noValidate>
             <input className="form-honeypot" type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" />
             <label className="form-field form-field-full select-field">
-              <span>지원 포지션</span>
+              <span>지원 전공</span>
               <span className="select-shell">
                 <select value={role} onChange={(event) => setRole(event.target.value)} name="role">
                   {roles.map((item) => <option value={item} key={item}>{item}</option>)}

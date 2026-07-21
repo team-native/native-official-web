@@ -89,11 +89,12 @@ export async function POST(request: Request) {
   if (resource === "jobs") {
     if (action === "delete") return remove(auth.client, "job_postings", data.id);
     const status = ["draft", "open", "closed"].includes(String(data.status)) ? String(data.status) : "draft";
+    const title = clean(data.title, 120);
     const payload = {
       ...(data.id ? { id: data.id } : {}),
-      slug: clean(data.slug, 100),
-      department: clean(data.department, 100),
-      title: clean(data.title, 120),
+      slug: clean(data.slug, 100) || slugFromTitle(title),
+      department: "전공",
+      title,
       summary: clean(data.summary, 600),
       description: clean(data.description, 5000),
       priority: Boolean(data.priority),
@@ -101,7 +102,7 @@ export async function POST(request: Request) {
       close_date: data.closeDate || null,
       sort_order: numberValue(data.sortOrder),
     };
-    if (!payload.slug || !payload.department || !payload.title || !payload.summary) return jsonError("공고 제목, 주소, 직군, 요약은 필수입니다.");
+    if (!payload.slug || !payload.title || !payload.summary) return jsonError("전공명과 공고 요약은 필수입니다.");
     const { error } = await auth.client.from("job_postings").upsert(payload);
     if (error) return jsonError(error.message, 500);
   }
@@ -147,4 +148,8 @@ function stringArray(value: unknown) {
 function numberValue(value: unknown) {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function slugFromTitle(value: string) {
+  return value.toLowerCase().replace(/\s+/g, "-").replace(/[^\p{L}\p{N}-]/gu, "").replace(/-+/g, "-").replace(/^-|-$/g, "");
 }
