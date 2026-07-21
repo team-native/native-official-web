@@ -129,26 +129,17 @@ export default function BookOnLogoContestPage() {
     <main className="contest-page">
       <header className="contest-header">
         <a className="contest-brand" href="/" aria-label="Native 홈페이지"><span><Image src="/native-logo.png" alt="" fill sizes="36px" unoptimized /></span><b>Native</b></a>
-        <div className="contest-header-label"><i /> BOOK-ON 로고 공모전</div>
-        <nav aria-label="공모전 메뉴"><a href="#guide">공모 요강</a><a href="#judging">심사 기준</a><a href="#prize">시상 안내</a><a className="contest-header-cta" href="#submit">작품 제출하기 <span>↓</span></a></nav>
+        <nav aria-label="공모전 메뉴"><a className="contest-header-cta" href="#submit">작품 제출하기 <span>↓</span></a></nav>
       </header>
 
       <section className="contest-hero">
         <div className="contest-hero-copy">
-          <div className="contest-eyebrow"><span>OPEN CALL</span> 학교 전체 대상 · Native 주최</div>
-          <h1><em>Book-on</em>의<br />새로운 얼굴을<br />찾습니다.</h1>
-          <p>학교 도서관 플랫폼 Book-on의 공식 로고 공모전입니다.<br />오래 기억되고 어디서나 선명한 아이디어를 보내주세요.</p>
+          <div className="contest-eyebrow"><span>2026</span> 학교 전체 대상 · Native 주최</div>
+          <h1><em>Book-on</em><br />로고 공모전</h1>
+          <p>학교 도서관 플랫폼 Book-on의 공식 로고를 찾습니다. 앱을 대표할 단순하고 선명한 아이디어를 보내주세요.</p>
           <div className="contest-hero-actions"><a href="#submit">공모전 참여하기 <span>→</span></a><a href="#guide">요강 먼저 보기</a></div>
           <div className="contest-hero-facts"><span><b>마감</b> 7월 25일 23:59</span><span><b>형식</b> PNG · 최대 10MB</span><span><b>제출</b> 1인 1작품</span></div>
         </div>
-        <div className="contest-hero-product">
-          <div className="hero-product-head"><span><i /> BOOK-ON APP</span><small>여러분의 로고가 적용될 실제 서비스</small></div>
-          <div className="hero-logo-placeholder"><small>이 자리에</small><strong>?</strong><b>여러분의 로고가 들어갑니다</b></div>
-          <div className="hero-phone hero-phone-home"><Image src="/book-on.png" alt="Book-on 홈 화면" fill sizes="260px" unoptimized /></div>
-          <div className="hero-phone hero-phone-detail"><Image src="/bookon-detail.png" alt="Book-on 도서 상세 화면" fill sizes="220px" unoptimized /></div>
-          <div className="hero-usage"><span>앱 아이콘</span><span>시작 화면</span><span>포스터</span></div>
-        </div>
-        <div className="contest-hero-meta"><div><small>주최</small><b>Native</b></div><div><small>접수 마감</small><b>2026. 07. 25 · 23:59</b></div><div><small>1등 상금</small><b>15,000원</b></div></div>
       </section>
 
       <section className="contest-intro contest-shell" id="guide">
