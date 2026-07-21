@@ -7,29 +7,62 @@
 .recruit-detail-header nav a { color: #777; font-size: 14px; font-weight: 650; text-decoration: none; }
 .recruit-detail-header nav a:hover { color: #111; }
 
-.recruit-detail-hero { width: min(1460px, calc(100% - 48px)); min-height: 670px; margin: 24px auto 0; border-radius: 40px; overflow: hidden; display: grid; grid-template-columns: 1.05fr .95fr; color: white; background: #18181a; }
+.recruit-detail-hero { width: min(1460px, calc(100% - 48px)); min-height: 670px; margin: 24px auto 0; border-radius: 40px; overflow: hidden; display: grid; grid-template-columns: 1.05fr .95fr; color: white; background: #18181a; opacity: 0; transform-origin: 50% 20%; animation: recruitHeroEnter .72s cubic-bezier(.2,.75,.25,1) both; }
 .recruit-detail-hero-copy { padding: clamp(48px, 7vw, 104px); display: flex; flex-direction: column; align-items: flex-start; }
-.recruit-detail-back { margin-bottom: auto; color: #aaa; font-size: 14px; font-weight: 650; text-decoration: none; }
-.recruit-detail-eyebrow { margin-top: 72px; display: flex; align-items: center; gap: 10px; color: #c4c4c4; font-size: 12px; font-weight: 750; letter-spacing: .13em; }
+.recruit-detail-back { margin-bottom: auto; color: #aaa; font-size: 14px; font-weight: 650; text-decoration: none; opacity: 0; animation: recruitCopyEnter .68s cubic-bezier(.2,.75,.25,1) .14s both; }
+.recruit-detail-eyebrow { margin-top: 72px; display: flex; align-items: center; gap: 10px; color: #c4c4c4; font-size: 12px; font-weight: 750; letter-spacing: .13em; opacity: 0; animation: recruitCopyEnter .68s cubic-bezier(.2,.75,.25,1) .22s both; }
 .recruit-detail-eyebrow i { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 7px rgba(255,200,61,.12); }
-.recruit-detail-hero h1 { margin: 22px 0 24px; font-size: clamp(58px, 7vw, 108px); line-height: .95; letter-spacing: -.07em; }
-.recruit-detail-hero-copy > p { max-width: 670px; margin: 0; color: #aaa; font-size: clamp(18px, 1.65vw, 25px); line-height: 1.65; word-break: keep-all; }
-.recruit-detail-meta { display: flex; gap: 10px; margin-top: 36px; flex-wrap: wrap; }
+.recruit-detail-hero h1 { margin: 22px 0 24px; font-size: clamp(58px, 7vw, 108px); line-height: .95; letter-spacing: -.07em; opacity: 0; animation: recruitTitleEnter .82s cubic-bezier(.16,.82,.22,1) .29s both; }
+.recruit-detail-hero-copy > p { max-width: 670px; margin: 0; color: #aaa; font-size: clamp(18px, 1.65vw, 25px); line-height: 1.65; word-break: keep-all; opacity: 0; animation: recruitCopyEnter .72s cubic-bezier(.2,.75,.25,1) .4s both; }
+.recruit-detail-meta { display: flex; gap: 10px; margin-top: 36px; flex-wrap: wrap; opacity: 0; animation: recruitCopyEnter .72s cubic-bezier(.2,.75,.25,1) .49s both; }
 .recruit-detail-meta span { padding: 11px 15px; border: 1px solid #373739; border-radius: 999px; color: #888; font-size: 12px; }
 .recruit-detail-meta b { margin-left: 8px; color: #f4f4f4; }
-.recruit-detail-apply { min-width: 250px; margin-top: 44px; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; border-radius: 999px; color: #111; background: var(--accent); font-weight: 760; text-decoration: none; transition: transform .25s ease, box-shadow .25s ease; }
+.recruit-detail-apply { min-width: 250px; margin-top: 44px; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; border-radius: 999px; color: #111; background: var(--accent); font-weight: 760; text-decoration: none; opacity: 0; animation: recruitCopyEnter .72s cubic-bezier(.2,.75,.25,1) .58s both; transition: transform .25s ease, box-shadow .25s ease; }
 .recruit-detail-apply:hover { transform: translateY(-4px); box-shadow: 0 18px 44px rgba(255,200,61,.2); }
 .recruit-detail-apply span { font-size: 21px; }
 
-.recruit-detail-visual { position: relative; overflow: hidden; background: radial-gradient(circle at 48% 45%, #3a3424 0, #20201f 36%, #111 72%); }
+.recruit-detail-visual { position: relative; overflow: hidden; background: radial-gradient(circle at 48% 45%, #3a3424 0, #20201f 36%, #111 72%); opacity: 0; animation: recruitVisualEnter .9s cubic-bezier(.18,.75,.22,1) .18s both; }
 .recruit-detail-visual::before, .recruit-detail-visual::after { content: ""; position: absolute; border: 1px solid rgba(255,200,61,.18); border-radius: 50%; }
-.recruit-detail-visual::before { width: 560px; height: 560px; top: 50%; left: 50%; transform: translate(-50%,-50%); }
-.recruit-detail-visual::after { width: 360px; height: 360px; top: 50%; left: 50%; transform: translate(-50%,-50%); }
-.recruit-detail-code { position: absolute; z-index: 2; width: min(420px, 68%); padding: 34px; top: 50%; left: 50%; transform: translate(-50%,-50%) rotate(-5deg); display: flex; flex-direction: column; border: 1px solid #3d3a32; border-radius: 30px; background: rgba(18,18,18,.86); box-shadow: 0 50px 90px rgba(0,0,0,.45); backdrop-filter: blur(12px); }
+.recruit-detail-visual::before { width: 560px; height: 560px; top: 50%; left: 50%; transform: translate(-50%,-50%); opacity: 0; animation: recruitRingEnter 1s cubic-bezier(.16,.82,.22,1) .3s both; }
+.recruit-detail-visual::after { width: 360px; height: 360px; top: 50%; left: 50%; transform: translate(-50%,-50%); opacity: 0; animation: recruitRingEnter .9s cubic-bezier(.16,.82,.22,1) .42s both; }
+.recruit-detail-code { position: absolute; z-index: 2; width: min(420px, 68%); padding: 34px; top: 50%; left: 50%; transform: translate(-50%,-50%) rotate(-5deg); display: flex; flex-direction: column; border: 1px solid #3d3a32; border-radius: 30px; background: rgba(18,18,18,.86); box-shadow: 0 50px 90px rgba(0,0,0,.45); backdrop-filter: blur(12px); opacity: 0; will-change: transform; animation: recruitCardEnter .92s cubic-bezier(.16,.84,.22,1) .38s both, recruitCardFloat 5.8s ease-in-out 1.3s infinite; }
 .recruit-detail-code span { color: var(--accent); font: 700 12px/1 monospace; letter-spacing: .16em; text-transform: uppercase; }
 .recruit-detail-code b { margin: 72px 0 18px; font-size: clamp(32px, 4vw, 58px); line-height: 1.05; letter-spacing: -.055em; }
 .recruit-detail-code small { padding-top: 18px; color: #777; border-top: 1px solid #333; font: 600 12px/1.4 monospace; }
-.recruit-detail-n { position: absolute; right: -26px; bottom: -100px; color: rgba(255,200,61,.06); font-size: 420px; font-weight: 900; line-height: .8; }
+.recruit-detail-n { position: absolute; right: -26px; bottom: -100px; color: rgba(255,200,61,.06); font-size: 420px; font-weight: 900; line-height: .8; opacity: 0; animation: recruitNEnter 1s cubic-bezier(.16,.82,.22,1) .5s both; }
+
+@keyframes recruitHeroEnter {
+  from { opacity: 0; transform: translateY(18px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes recruitCopyEnter {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes recruitTitleEnter {
+  from { opacity: 0; transform: translateY(32px); letter-spacing: -.035em; }
+  to { opacity: 1; transform: translateY(0); letter-spacing: -.07em; }
+}
+@keyframes recruitVisualEnter {
+  from { opacity: 0; filter: brightness(.65); }
+  to { opacity: 1; filter: brightness(1); }
+}
+@keyframes recruitRingEnter {
+  from { opacity: 0; transform: translate(-50%,-50%) scale(.72); }
+  to { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+}
+@keyframes recruitCardEnter {
+  from { opacity: 0; transform: translate(-40%,-40%) rotate(4deg) scale(.86); }
+  to { opacity: 1; transform: translate(-50%,-50%) rotate(-5deg) scale(1); }
+}
+@keyframes recruitCardFloat {
+  0%, 100% { transform: translate(-50%,-50%) rotate(-5deg); }
+  50% { transform: translate(-50%,-53%) rotate(-3.7deg); }
+}
+@keyframes recruitNEnter {
+  from { opacity: 0; transform: translate(36px,34px); }
+  to { opacity: 1; transform: translate(0,0); }
+}
 
 .recruit-detail-content { width: min(1320px, calc(100% - 48px)); margin: 0 auto; padding: 140px 0; display: grid; grid-template-columns: 360px minmax(0,1fr); gap: clamp(72px, 10vw, 160px); }
 .recruit-detail-content aside { position: sticky; top: 40px; align-self: start; }
@@ -89,4 +122,21 @@
   .recruit-detail-description li { padding-left: 48px; }
   .recruit-detail-bottom { padding: 38px 26px; border-radius: 26px; }
   .recruit-detail-bottom a { min-width: 0; width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recruit-detail-hero,
+  .recruit-detail-back,
+  .recruit-detail-eyebrow,
+  .recruit-detail-hero h1,
+  .recruit-detail-hero-copy > p,
+  .recruit-detail-meta,
+  .recruit-detail-apply,
+  .recruit-detail-visual,
+  .recruit-detail-visual::before,
+  .recruit-detail-visual::after,
+  .recruit-detail-code,
+  .recruit-detail-n { animation: none !important; opacity: 1; }
+  .recruit-detail-hero { transform: none; }
+  .recruit-detail-code { transform: translate(-50%,-50%) rotate(-5deg); }
 }
