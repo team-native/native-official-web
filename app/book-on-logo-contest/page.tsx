@@ -142,8 +142,8 @@ export default function BookOnLogoContestPage() {
           <div className="contest-hero-facts"><span><b>마감</b> 7월 25일 23:59</span><span><b>형식</b> PNG · 최대 10MB</span><span><b>제출</b> 1인 1작품</span></div>
         </div>
         <div className="contest-hero-product">
-          <div className="hero-product-head"><span><i /> BOOK-ON APP</span><small>공식 로고 적용 예시</small></div>
-          <div className="hero-logo-placeholder"><small>이 자리에</small><strong>?</strong><b>여러분의 로고가 들어갑니다</b></div>
+          <div className="hero-product-head"><span><i /> BOOK-ON APP</span></div>
+          <div className="hero-logo-placeholder"><strong>?</strong><b>여러분의 로고가 들어갑니다</b></div>
           <div className="hero-phone hero-phone-home"><Image src="/book-on.png" alt="Book-on 홈 화면" fill sizes="260px" unoptimized /></div>
           <div className="hero-phone hero-phone-detail"><Image src="/bookon-detail.png" alt="Book-on 도서 상세 화면" fill sizes="220px" unoptimized /></div>
           <div className="hero-usage"><span>앱 아이콘</span><span>시작 화면</span><span>포스터</span></div>
