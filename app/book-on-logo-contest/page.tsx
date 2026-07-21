@@ -67,7 +67,12 @@ export default function BookOnLogoContestPage() {
 
   const checkEmail = async () => {
     const email = value.email.trim().toLowerCase();
-    if (!email || !/^\S+@\S+\.\S+$/.test(email)) { setEmailState("idle"); return false; }
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+      setEmailState("idle");
+      setError("학교 이메일을 정확히 입력한 뒤 중복 확인을 눌러주세요.");
+      return false;
+    }
+    setError("");
     setEmailState("checking");
     try {
       const response = await fetch(`/api/contests/book-on?email=${encodeURIComponent(email)}`, { cache: "no-store" });
@@ -87,7 +92,7 @@ export default function BookOnLogoContestPage() {
     const fileError = validateFile(file);
     if (fileError) return setError(fileError);
     if (!value.name.trim() || !value.grade || !value.classNumber || !value.studentNumber || !value.email.trim() || !value.creationMethod) return setError("모든 항목을 빠짐없이 작성해주세요.");
-    if (!(await checkEmail())) return setError("이미 제출된 이메일입니다.");
+    if (emailState !== "available") return setError("학교 이메일 중복 확인을 먼저 완료해주세요.");
 
     setBusy(true);
     try {
@@ -191,11 +196,11 @@ export default function BookOnLogoContestPage() {
             <div className="form-heading"><small>ENTRY FORM</small><h3>Book-on 로고 제출</h3><span>모든 항목은 필수입니다.</span></div>
             <label className="contest-field full"><span>이름</span><input value={value.name} onChange={(event) => update("name", event.target.value)} placeholder="이름을 입력해주세요" autoComplete="name" required /></label>
             <div className="student-fields"><label className="contest-field"><span>학년</span><input inputMode="numeric" maxLength={1} value={value.grade} onChange={(event) => update("grade", event.target.value.replace(/\D/g, ""))} placeholder="예: 2" required /></label><label className="contest-field"><span>반</span><input inputMode="numeric" maxLength={2} value={value.classNumber} onChange={(event) => update("classNumber", event.target.value.replace(/\D/g, ""))} placeholder="예: 3" required /></label><label className="contest-field"><span>번호</span><input inputMode="numeric" maxLength={2} value={value.studentNumber} onChange={(event) => update("studentNumber", event.target.value.replace(/\D/g, ""))} placeholder="예: 17" required /></label></div>
-            <label className={`contest-field full email-field ${emailState}`}><span>학교 이메일</span><div><input type="email" value={value.email} onChange={(event) => update("email", event.target.value)} onBlur={checkEmail} placeholder="school@email.com" autoComplete="email" required /><i>{emailState === "checking" ? "확인 중" : emailState === "available" ? "사용 가능" : emailState === "duplicate" ? "제출 완료" : "중복 확인"}</i></div>{emailState === "duplicate" && <small>이미 제출된 이메일입니다.</small>}</label>
+            <label className={`contest-field full email-field ${emailState}`}><span>학교 이메일</span><div><input type="email" value={value.email} onChange={(event) => update("email", event.target.value)} placeholder="school@email.com" autoComplete="email" required /><button type="button" onClick={() => void checkEmail()} disabled={emailState === "checking" || !/^\S+@\S+\.\S+$/.test(value.email.trim())}>{emailState === "checking" ? "확인 중" : emailState === "available" ? "확인 완료 ✓" : "중복 확인"}</button></div>{emailState === "duplicate" ? <small>이미 제출된 이메일입니다. 다른 이메일을 입력해주세요.</small> : emailState === "available" ? <small className="available-message">제출 가능한 이메일입니다.</small> : <small className="email-help">이메일 입력 후 중복 확인을 눌러주세요.</small>}</label>
             <div className="contest-field full"><span>로고 파일</span><label className={`file-drop ${file ? "has-file" : ""}`} onDragOver={(event) => event.preventDefault()} onDrop={(event: DragEvent<HTMLLabelElement>) => { event.preventDefault(); chooseFile(event.dataTransfer.files[0]); }}><input type="file" accept="image/png,.png" onChange={(event: ChangeEvent<HTMLInputElement>) => chooseFile(event.target.files?.[0])} />{file && preview ? <><span className="file-preview" style={{ backgroundImage: `url(${preview})` }} /><div><b>{file.name}</b><small>{(file.size / 1024 / 1024).toFixed(2)}MB · PNG</small><em>다른 파일 선택</em></div></> : <><div className="upload-symbol"><i>↑</i></div><div><b>PNG 파일을 올려주세요.</b><small>클릭하거나 파일을 여기로 드래그 · 최대 10MB</small></div></>}</label></div>
             <fieldset className="method-field"><legend>제작 방법</legend><label className={value.creationMethod === "direct" ? "selected" : ""}><input type="radio" name="creationMethod" value="direct" checked={value.creationMethod === "direct"} onChange={() => update("creationMethod", "direct")} /><span><i>✦</i><b>직접 제작</b><small>디자인 도구 또는 손으로 직접 만들었어요.</small></span></label><label className={value.creationMethod === "ai" ? "selected" : ""}><input type="radio" name="creationMethod" value="ai" checked={value.creationMethod === "ai"} onChange={() => update("creationMethod", "ai")} /><span><i>AI</i><b>AI 생성 사용</b><small>생성형 AI를 전부 또는 일부 사용했어요.</small></span></label></fieldset>
             {error && <div className="contest-error"><span>!</span>{error}</div>}
-            <button className="contest-submit" type="submit" disabled={busy || emailState === "duplicate"}><span>{busy ? "작품을 제출하고 있습니다" : "Book-on 로고 제출하기"}</span><b>{busy ? "···" : "→"}</b></button>
+            <button className="contest-submit" type="submit" disabled={busy || emailState !== "available"}><span>{busy ? "작품을 제출하고 있습니다" : emailState === "available" ? "Book-on 로고 제출하기" : "이메일 중복 확인 후 제출 가능"}</span><b>{busy ? "···" : emailState === "available" ? "→" : "—"}</b></button>
             <p className="privacy-note">제출 정보는 공모전 심사와 결과 안내 목적으로만 사용됩니다.</p>
           </form>
         )}
