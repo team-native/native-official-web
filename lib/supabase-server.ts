@@ -31,7 +31,7 @@ export async function requireAdmin(request: Request) {
 
   const { data: admin, error: adminError } = await adminClient
     .from("admin_users")
-    .select("user_id, display_name")
+    .select("user_id, display_name, role")
     .eq("user_id", userData.user.id)
     .maybeSingle();
 

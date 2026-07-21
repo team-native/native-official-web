@@ -6,10 +6,11 @@ import { useRouter } from "next/navigation";
 import { JobPosting, Project } from "@/lib/content";
 import { getBrowserSupabase } from "@/lib/supabase-browser";
 
-type Tab = "overview" | "projects" | "jobs" | "applications" | "inquiries";
+type Tab = "overview" | "projects" | "jobs" | "applications" | "inquiries" | "access";
 type Application = { id: string; role: string; student_name: string; email: string; goal: string; status: string; created_at: string };
 type Inquiry = { id: string; topic: string; student_name: string; email: string; message: string; status: string; created_at: string };
-type AdminData = { admin: { email: string; displayName: string }; projects: Project[]; jobs: JobPosting[]; applications: Application[]; inquiries: Inquiry[] };
+type AccessRequest = { id: string; user_id: string; email: string; display_name: string; status: "pending" | "approved" | "rejected"; requested_at: string; reviewed_at: string | null };
+type AdminData = { admin: { email: string; displayName: string; role: "owner" | "admin" }; projects: Project[]; jobs: JobPosting[]; applications: Application[]; inquiries: Inquiry[]; accessRequests: AccessRequest[] };
 
 const emptyProject: Project = { slug: "", name: "", type: "", description: "", summary: "", content: "", logo: "/native-logo.png", images: [], tone: "bookon", visual: "web-screen", tags: [], sortOrder: 0, published: true };
 const emptyJob: JobPosting = { slug: "", department: "", title: "", summary: "", description: "", priority: false, status: "draft", closeDate: null, sortOrder: 0 };
@@ -60,6 +61,7 @@ export default function AdminPage() {
     jobs: data?.jobs.filter((item) => item.status === "open").length ?? 0,
     applications: data?.applications.filter((item) => item.status === "new").length ?? 0,
     inquiries: data?.inquiries.filter((item) => item.status === "new").length ?? 0,
+    access: data?.accessRequests.filter((item) => item.status === "pending").length ?? 0,
   }), [data]);
 
   if (loading) return <main className="admin-loading"><span>N</span><p>관리 페이지를 준비하고 있습니다.</p></main>;
@@ -76,6 +78,7 @@ export default function AdminPage() {
           <AdminNav active={tab === "jobs"} onClick={() => setTab("jobs")} icon="＋" label="지원 공고" count={counts.jobs} />
           <AdminNav active={tab === "applications"} onClick={() => setTab("applications")} icon="▤" label="지원서" count={counts.applications} />
           <AdminNav active={tab === "inquiries"} onClick={() => setTab("inquiries")} icon="◌" label="문의함" count={counts.inquiries} />
+          {data.admin.role === "owner" && <AdminNav active={tab === "access"} onClick={() => setTab("access")} icon="◎" label="접근 승인" count={counts.access} />}
         </nav>
         <div className="admin-sidebar-foot"><div><small>{data.admin.displayName}</small><span>{data.admin.email}</span></div><button onClick={signOut}>로그아웃</button></div>
       </aside>
@@ -89,6 +92,7 @@ export default function AdminPage() {
         {tab === "jobs" && <JobsPanel jobs={data.jobs} onNew={() => setJobEditor({ ...emptyJob, sortOrder: data.jobs.length + 1 })} onEdit={setJobEditor} onDelete={(id) => confirm("이 지원 공고를 삭제할까요?") && mutate("jobs", "delete", { id }).catch((reason) => setError(reason.message))} />}
         {tab === "applications" && <InboxPanel type="applications" items={data.applications} onStatus={(id, status) => mutate("applications", "status", { id, status }).catch((reason) => setError(reason.message))} onDelete={(id) => confirm("지원서를 영구 삭제할까요?") && mutate("applications", "delete", { id }).catch((reason) => setError(reason.message))} />}
         {tab === "inquiries" && <InboxPanel type="inquiries" items={data.inquiries} onStatus={(id, status) => mutate("inquiries", "status", { id, status }).catch((reason) => setError(reason.message))} onDelete={(id) => confirm("문의를 영구 삭제할까요?") && mutate("inquiries", "delete", { id }).catch((reason) => setError(reason.message))} />}
+        {tab === "access" && data.admin.role === "owner" && <AccessPanel requests={data.accessRequests} onReview={(id, status) => mutate("access", "review", { id, status }).catch((reason) => setError(reason.message))} />}
       </section>
 
       {projectEditor && <ProjectEditor project={projectEditor} onClose={() => setProjectEditor(null)} onSave={(project) => mutate("projects", "save", project as unknown as Record<string, unknown>).then(() => setProjectEditor(null)).catch((reason) => setError(reason.message))} />}
@@ -129,6 +133,10 @@ function InboxPanel({ type, items, onStatus, onDelete }: { type: "applications" 
   return <section className="admin-panel"><div className="admin-section-head"><div><small>{isApplication ? "APPLICATIONS" : "INBOX"}</small><h2>{isApplication ? "지원서" : "문의함"}</h2><p>{isApplication ? "도착한 지원서를 확인하고 검토 상태를 관리합니다." : "지원 및 NativeLab 프로젝트 문의를 확인합니다."}</p></div></div><div className="admin-inbox-list">{items.length ? items.map((item) => { const application = item as Application; const inquiry = item as Inquiry; return <article key={item.id}><div className="admin-inbox-head"><span>{isApplication ? application.role : inquiry.topic}</span><time>{formatDate(item.created_at)}</time></div><h3>{item.student_name}</h3><a href={`mailto:${item.email}`}>{item.email}</a><p>{isApplication ? application.goal : inquiry.message}</p><div className="admin-inbox-actions"><select value={item.status} onChange={(event) => onStatus(item.id, event.target.value)}>{statuses.map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select><button className="danger" onClick={() => onDelete(item.id)}>삭제</button></div></article>; }) : <div className="admin-empty">아직 도착한 항목이 없습니다.</div>}</div></section>;
 }
 
+function AccessPanel({ requests, onReview }: { requests: AccessRequest[]; onReview: (id: string, status: "approved" | "rejected") => void }) {
+  return <section className="admin-panel"><div className="admin-section-head"><div><small>ADMIN ACCESS</small><h2>관리자 접근 승인</h2><p>관리 페이지 사용을 요청한 계정을 확인하고 직접 승인하거나 거절합니다.</p></div></div><div className="admin-access-list">{requests.length ? requests.map((request) => <article key={request.id}><div className="admin-access-avatar">{request.display_name.slice(0, 1).toUpperCase()}</div><div><span className={`status-${request.status}`}>{request.status === "pending" ? "승인 대기" : request.status === "approved" ? "승인됨" : "거절됨"}</span><h3>{request.display_name}</h3><a href={`mailto:${request.email}`}>{request.email}</a><time>요청 {formatDate(request.requested_at)}</time></div><div className="admin-access-actions">{request.status === "pending" ? <><button className="approve" onClick={() => onReview(request.id, "approved")}>관리자 승인</button><button onClick={() => onReview(request.id, "rejected")}>거절</button></> : <span>{request.reviewed_at ? formatDate(request.reviewed_at) : "처리 완료"}</span>}</div></article>) : <div className="admin-empty">아직 관리자 접근 요청이 없습니다.</div>}</div></section>;
+}
+
 function ProjectEditor({ project, onClose, onSave }: { project: Project; onClose: () => void; onSave: (item: Project) => void }) {
   const [value, setValue] = useState(project);
   const submit = (event: FormEvent) => { event.preventDefault(); onSave(value); };
@@ -167,4 +175,4 @@ function Field({ label, value, onChange, placeholder, type = "text", required, w
 function TextArea({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) { return <label className="admin-field wide"><span>{label}</span><textarea value={value} onChange={(event) => onChange(event.target.value)} /></label>; }
 function split(value: string) { return value.split(",").map((item) => item.trim()).filter(Boolean); }
 function formatDate(value: string) { return new Intl.DateTimeFormat("ko-KR", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value)); }
-function tabTitle(tab: Tab) { return ({ overview: "대시보드", projects: "프로젝트", jobs: "지원 공고", applications: "지원서", inquiries: "문의함" })[tab]; }
+function tabTitle(tab: Tab) { return ({ overview: "대시보드", projects: "프로젝트", jobs: "지원 공고", applications: "지원서", inquiries: "문의함", access: "접근 승인" })[tab]; }

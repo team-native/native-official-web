@@ -2,29 +2,31 @@ import { jobFromRow, projectFromRow } from "@/lib/content";
 import { jsonError, requireAdmin } from "@/lib/supabase-server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-const allowedResources = ["projects", "jobs", "applications", "inquiries"] as const;
+const allowedResources = ["projects", "jobs", "applications", "inquiries", "access"] as const;
 type Resource = (typeof allowedResources)[number];
 
 export async function GET(request: Request) {
   const auth = await requireAdmin(request);
   if (!auth) return jsonError("관리자 로그인이 필요합니다.", 401);
 
-  const [projects, jobs, applications, inquiries] = await Promise.all([
+  const [projects, jobs, applications, inquiries, accessRequests] = await Promise.all([
     auth.client.from("projects").select("*").order("sort_order"),
     auth.client.from("job_postings").select("*").order("sort_order"),
     auth.client.from("applications").select("*").order("created_at", { ascending: false }),
     auth.client.from("inquiries").select("*").order("created_at", { ascending: false }),
+    auth.admin.role === "owner" ? auth.client.from("admin_access_requests").select("*").order("requested_at", { ascending: false }) : Promise.resolve({ data: [], error: null }),
   ]);
 
-  const error = projects.error || jobs.error || applications.error || inquiries.error;
+  const error = projects.error || jobs.error || applications.error || inquiries.error || accessRequests.error;
   if (error) return jsonError("관리 데이터를 불러오지 못했습니다.", 500);
 
   return Response.json({
-    admin: { email: auth.user.email, displayName: auth.admin.display_name },
+    admin: { email: auth.user.email, displayName: auth.admin.display_name, role: auth.admin.role },
     projects: (projects.data ?? []).map(projectFromRow),
     jobs: (jobs.data ?? []).map(jobFromRow),
     applications: applications.data ?? [],
     inquiries: inquiries.data ?? [],
+    accessRequests: accessRequests.data ?? [],
   });
 }
 
@@ -37,6 +39,22 @@ export async function POST(request: Request) {
   const action = String(body?.action ?? "");
   const data = (body?.data ?? {}) as Record<string, unknown>;
   if (!allowedResources.includes(resource)) return jsonError("지원하지 않는 관리 항목입니다.");
+
+  if (resource === "access") {
+    if (auth.admin.role !== "owner") return jsonError("최고관리자만 접근 요청을 처리할 수 있습니다.", 403);
+    if (action !== "review" || !["approved", "rejected"].includes(String(data.status))) return jsonError("지원하지 않는 승인 작업입니다.");
+    const { data: accessRequest, error: requestError } = await auth.client.from("admin_access_requests").select("*").eq("id", data.id).maybeSingle();
+    if (requestError || !accessRequest) return jsonError("접근 요청을 찾지 못했습니다.", 404);
+    if (data.status === "approved") {
+      const { error: grantError } = await auth.client.from("admin_users").upsert({ user_id: accessRequest.user_id, display_name: accessRequest.display_name, role: "admin" });
+      if (grantError) return jsonError("관리자 권한을 부여하지 못했습니다.", 500);
+    } else {
+      await auth.client.from("admin_users").delete().eq("user_id", accessRequest.user_id).eq("role", "admin");
+    }
+    const { error: reviewError } = await auth.client.from("admin_access_requests").update({ status: data.status, reviewed_at: new Date().toISOString(), reviewed_by: auth.user.id }).eq("id", data.id);
+    if (reviewError) return jsonError("접근 요청 상태를 저장하지 못했습니다.", 500);
+    return Response.json({ ok: true });
+  }
 
   if (resource === "projects") {
     if (action === "delete") return remove(auth.client, "projects", data.id);
