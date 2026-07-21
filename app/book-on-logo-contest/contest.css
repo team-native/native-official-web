@@ -210,7 +210,7 @@
 .prize-card-03 { padding: 10px !important; background: #f7f7f4 !important; color: #171a17; }
 .prize-card-03 > small { position: absolute; z-index: 3; top: 22px; right: 22px; padding: 7px 9px; border-radius: 999px; background: rgba(255,255,255,.86); color: #5e655e !important; backdrop-filter: blur(12px); }
 .prize-keyring { position: relative; height: 190px; overflow: hidden; border-radius: 20px; background: #fff; }
-.prize-keyring img { object-fit: cover; object-position: center 52%; transition: transform .45s ease; }
+.prize-keyring img { object-fit: cover; object-position: center 70%; transition: transform .45s ease; }
 .prize-card-03:hover .prize-keyring img { transform: scale(1.035); }
 .prize-card-03 .prize-card-copy { margin: 0; padding: 20px 17px 12px; }
 .prize-card-03 .prize-card-copy > b { color: #757c75; }
@@ -370,54 +370,55 @@
 }
 
 /* Restored text-first contest hero */
-.contest-header { width: min(1280px, calc(100% - 80px)); grid-template-columns: 1fr auto; }
-.contest-header .contest-brand { font-size: 29px; }
-.contest-header .contest-brand > span { width: 70px; height: 70px; border-radius: 20px; }
+.contest-header { width: min(1120px, calc(100% - 96px)); grid-template-columns: 1fr auto; }
+.contest-header > .contest-brand { justify-self: start; }
+.contest-header .contest-brand { font-size: 24px; }
+.contest-header .contest-brand > span { width: 52px; height: 52px; border-radius: 15px; }
 .contest-header nav { grid-column: 2; }
-.contest-header-cta { height: 90px; padding: 0 28px; gap: 42px; font-size: 16px; }
-.contest-header-cta span { font-size: 28px; }
+.contest-header-cta { height: 64px; padding: 0 22px; gap: 28px; font-size: 13px; }
+.contest-header-cta span { font-size: 22px; }
 .contest-hero {
-  min-height: max(1240px, 100svh);
-  padding: 220px 0 60px;
+  min-height: max(980px, 100svh);
+  padding: 160px 0 50px;
   display: block;
   border-radius: 0;
   background: radial-gradient(circle at 80% 55%, rgba(111, 175, 18, .11), transparent 34%), #090d0a;
 }
-.contest-hero-copy { width: min(1280px, calc(100% - 80px)); max-width: none; margin-inline: auto; }
-.contest-eyebrow { font-size: 16px; }
-.contest-eyebrow span { padding: 13px 19px; font-size: 17px; }
-.contest-hero h1 { max-width: none; margin: 64px 0 44px; font-size: clamp(92px, 10.3vw, 140px); line-height: .91; letter-spacing: -.075em; }
+.contest-hero-copy { width: min(1120px, calc(100% - 96px)); max-width: none; margin-inline: auto; }
+.contest-eyebrow { font-size: 13px; }
+.contest-eyebrow span { padding: 10px 15px; font-size: 14px; }
+.contest-hero h1 { max-width: none; margin: 42px 0 30px; font-size: clamp(72px, 6.8vw, 100px); line-height: .94; letter-spacing: -.07em; }
 .contest-hero h1 em { color: #97e51c; }
-.contest-hero-copy > p { max-width: 960px; color: #a8afa7; font-size: 22px; line-height: 1.7; }
-.contest-hero-actions { width: 100%; margin-top: 88px; align-items: stretch; flex-direction: column; gap: 20px; }
-.contest-hero-actions a { width: 100%; height: 110px; padding: 0 48px; justify-content: space-between; border-color: rgba(255,255,255,.15); color: #afb5af; font-size: 19px; }
+.contest-hero-copy > p { max-width: 820px; color: #a8afa7; font-size: 18px; line-height: 1.65; }
+.contest-hero-actions { width: 100%; margin-top: 52px; align-items: stretch; flex-direction: column; gap: 14px; }
+.contest-hero-actions a { width: 100%; height: 78px; padding: 0 36px; justify-content: space-between; border-color: rgba(255,255,255,.15); color: #afb5af; font-size: 15px; }
 .contest-hero-actions a:first-child { border-color: #97e51c; background: #97e51c; color: #121611; }
-.contest-hero-facts { margin-top: 68px; display: flex; align-items: flex-start; flex-direction: column; gap: 16px; }
-.contest-hero-facts span { width: fit-content; padding: 15px 22px; border-color: rgba(255,255,255,.16); color: #7f877f; font-size: 14px; }
+.contest-hero-facts { margin-top: 44px; display: flex; align-items: flex-start; flex-direction: column; gap: 12px; }
+.contest-hero-facts span { width: fit-content; padding: 12px 17px; border-color: rgba(255,255,255,.16); color: #7f877f; font-size: 12px; }
 .contest-hero-facts b { margin-right: 8px; color: #d9ded8; }
 
 @media (max-width: 1050px) and (min-width: 761px) {
-  .contest-header, .contest-hero-copy { width: calc(100% - 56px); }
-  .contest-hero { min-height: 1120px; padding-top: 170px; }
-  .contest-hero h1 { margin-top: 48px; font-size: clamp(76px, 10vw, 96px); }
-  .contest-hero-actions { margin-top: 56px; }
-  .contest-hero-actions a { height: 88px; }
+  .contest-header, .contest-hero-copy { width: min(840px, calc(100% - 80px)); }
+  .contest-hero { min-height: 900px; padding-top: 140px; }
+  .contest-hero h1 { margin-top: 38px; font-size: clamp(68px, 7.2vw, 76px); }
+  .contest-hero-actions { margin-top: 44px; }
+  .contest-hero-actions a { height: 70px; }
 }
 
 @media (max-width: 760px) {
   .contest-header { width: calc(100% - 40px); height: 72px; }
   .contest-header .contest-brand { font-size: 18px; }
   .contest-header .contest-brand > span { width: 35px; height: 35px; border-radius: 10px; }
-  .contest-header-cta { height: 46px; padding: 0 14px; gap: 14px; font-size: 9px; }
+  .contest-header-cta { height: 42px; padding: 0 13px; gap: 13px; font-size: 9px; }
   .contest-header-cta span { font-size: 16px; }
-  .contest-hero { min-height: 900px; padding: 115px 20px 56px; }
+  .contest-hero { min-height: 780px; padding: 105px 20px 48px; }
   .contest-hero-copy { width: 100%; margin-inline: 0; }
   .contest-eyebrow { gap: 8px; font-size: 9px; letter-spacing: .1em; }
   .contest-eyebrow span { padding: 8px 10px; font-size: 10px; }
-  .contest-hero h1 { margin: 38px 0 30px; font-size: clamp(58px, 10.5vw, 70px); }
-  .contest-hero-copy > p { font-size: 13px; }
-  .contest-hero-actions { margin-top: 39px; gap: 11px; }
-  .contest-hero-actions a { height: 64px; padding-inline: 20px; font-size: 12px; }
-  .contest-hero-facts { margin-top: 34px; gap: 10px; }
+  .contest-hero h1 { margin: 32px 0 24px; font-size: clamp(52px, 9vw, 60px); }
+  .contest-hero-copy > p { font-size: 12px; }
+  .contest-hero-actions { margin-top: 32px; gap: 10px; }
+  .contest-hero-actions a { height: 56px; padding-inline: 18px; font-size: 11px; }
+  .contest-hero-facts { margin-top: 28px; gap: 9px; }
   .contest-hero-facts span { padding: 10px 13px; font-size: 9px; }
 }
