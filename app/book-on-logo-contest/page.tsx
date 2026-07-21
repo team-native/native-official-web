@@ -161,7 +161,11 @@ export default function BookOnLogoContestPage() {
               <small><i /> NATIVE OPEN ROLES</small>
               <h2 id="recruit-popup-title">지금, 함께 만들<br />사람을 찾고 있어요.</h2>
               <p>Native는 현재 <b>디자인·프론트엔드·게임 개발</b> 직군의 지원을 우선적으로 받고 있습니다.</p>
-              <div className="recruit-popup-roles" aria-label="우선 모집 직군"><span>Design</span><span>Front-End</span><span>Game Development</span></div>
+              <div className="recruit-popup-roles" aria-label="우선 모집 직군">
+                <article><small>01 · PRIORITY</small><b>디자인</b><span>브랜드와 제품의 경험을 설계해요.</span></article>
+                <article><small>02 · PRIORITY</small><b>프론트엔드</b><span>사용자가 만나는 화면을 구현해요.</span></article>
+                <article><small>03 · PRIORITY</small><b>게임 개발</b><span>새로운 플레이 경험을 만들어요.</span></article>
+              </div>
               <div className="recruit-popup-benefits" aria-label="Native 활동 혜택">
                 <div><i>01</i><span><b>프로젝트 활동비 지원</b><small>좋은 아이디어를 실제 제품으로 만드는 데 필요한 비용을 지원해요.</small></span></div>
                 <div><i>02</i><span><b>팀원 모집 지원</b><small>프로젝트에 필요한 직군과 인원을 함께 찾고 팀 구성을 도와드려요.</small></span></div>
