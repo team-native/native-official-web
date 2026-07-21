@@ -131,6 +131,116 @@
 }
 @media (prefers-reduced-motion: reduce) { .contest-page *, .contest-page *::before, .contest-page *::after { scroll-behavior: auto !important; animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; } }
 
+/* Toss-inspired information hierarchy, using the original Book-on palette */
+.contest-hero {
+  min-height: 930px;
+  background:
+    radial-gradient(ellipse at 75% 90%, rgba(118, 189, 16, .28), transparent 38%),
+    radial-gradient(circle at 86% 36%, rgba(156, 225, 43, .1), transparent 24%),
+    #070907;
+}
+.contest-hero-copy { align-self: center; }
+.contest-hero h1 { max-width: 760px; font-size: clamp(66px, 6.1vw, 102px); line-height: 1.02; }
+.contest-hero h1 em { color: #9ce12b; }
+.contest-hero-product {
+  min-height: 590px;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.contest-hero-product::before {
+  content: "";
+  position: absolute;
+  left: 7%; right: -7%; bottom: -4%; height: 44%;
+  border-radius: 50%;
+  background: rgba(126, 202, 23, .24);
+  filter: blur(75px);
+}
+.hero-product-head {
+  position: absolute; z-index: 6; top: 24px; left: 80px; right: 24px;
+  height: 58px; padding: 0 20px;
+  border: 1px solid rgba(255,255,255,.13); border-radius: 999px;
+  background: rgba(20, 24, 20, .72); backdrop-filter: blur(18px);
+}
+.hero-logo-placeholder {
+  top: 150px; left: 4px; width: 155px; height: 170px;
+  border-style: solid; background: rgba(18, 21, 18, .82);
+  box-shadow: 0 24px 60px rgba(0,0,0,.34);
+  transform: rotate(-8deg);
+}
+.hero-phone { border-width: 6px; box-shadow: 0 38px 85px rgba(0,0,0,.52); }
+.hero-phone-home { right: 105px; bottom: 5px; width: 248px; height: 538px; transform: rotate(5deg); }
+.hero-phone-detail { right: -50px; bottom: 52px; width: 205px; height: 445px; transform: rotate(-4deg); }
+.hero-usage { left: 20px; bottom: 34px; }
+.hero-usage span { border: 1px solid rgba(255,255,255,.1); background: rgba(10,12,10,.62); backdrop-filter: blur(12px); }
+
+.judging-board {
+  scroll-margin-top: 30px;
+  margin-top: 72px; padding: clamp(30px, 5vw, 66px);
+  display: grid; grid-template-columns: minmax(280px, .78fr) minmax(420px, 1.22fr); gap: 55px 75px;
+  overflow: hidden; border-radius: 34px;
+  background: #151815; color: #fff;
+  box-shadow: 0 35px 90px rgba(36, 48, 25, .12);
+}
+.judging-heading small { color: var(--contest-lime); font-size: 9px; font-weight: 800; letter-spacing: .17em; }
+.judging-heading h3 { margin: 18px 0 20px; font-size: clamp(34px, 3.6vw, 54px); line-height: 1.12; letter-spacing: -.06em; }
+.judging-heading p { max-width: 390px; margin: 0; color: #858d85; font-size: 11px; line-height: 1.8; }
+.judging-criteria { border-top: 1px solid rgba(255,255,255,.1); }
+.judging-criteria > div { min-height: 84px; display: grid; grid-template-columns: 38px 1fr auto; align-items: center; gap: 15px; border-bottom: 1px solid rgba(255,255,255,.1); }
+.judging-criteria b { width: 32px; height: 32px; display: grid; place-items: center; border: 1px solid rgba(255,255,255,.13); border-radius: 50%; color: var(--contest-lime); font-size: 8px; }
+.judging-criteria span { display: flex; flex-direction: column; gap: 5px; }
+.judging-criteria strong { font-size: 12px; }
+.judging-criteria small { color: #707870; font-size: 9px; line-height: 1.45; }
+.judging-criteria em { color: #a0a7a0; font-size: 10px; font-style: normal; font-weight: 800; }
+.judging-disqualify {
+  grid-column: 1 / -1; min-height: 112px; padding: 25px 28px;
+  display: grid; grid-template-columns: 120px 1fr; align-items: center; gap: 28px;
+  border: 1px solid rgba(255, 105, 97, .28); border-radius: 22px;
+  background: linear-gradient(100deg, rgba(255, 95, 87, .13), rgba(255, 95, 87, .035));
+}
+.judging-disqualify > span { width: fit-content; padding: 10px 13px; border-radius: 999px; background: #ff625a; color: #fff; font-size: 9px; font-weight: 850; }
+.judging-disqualify strong { display: block; font-size: 15px; }
+.judging-disqualify p { margin: 7px 0 0; color: #9a817f; font-size: 10px; line-height: 1.6; }
+
+.prize-grid { grid-template-columns: 1.15fr 1fr 1.2fr; }
+.prize-card { position: relative; overflow: hidden; }
+.prize-card-copy { margin-top: 20px; }
+.prize-card-03 { padding: 10px !important; background: #f7f7f4 !important; color: #171a17; }
+.prize-card-03 > small { position: absolute; z-index: 3; top: 22px; right: 22px; padding: 7px 9px; border-radius: 999px; background: rgba(255,255,255,.86); color: #5e655e !important; backdrop-filter: blur(12px); }
+.prize-keyring { position: relative; height: 190px; overflow: hidden; border-radius: 20px; background: #fff; }
+.prize-keyring img { object-fit: cover; object-position: center 52%; transition: transform .45s ease; }
+.prize-card-03:hover .prize-keyring img { transform: scale(1.035); }
+.prize-card-03 .prize-card-copy { margin: 0; padding: 20px 17px 12px; }
+.prize-card-03 .prize-card-copy > b { color: #757c75; }
+.prize-card-03 .prize-card-copy > p { color: #7f867f; }
+
+@media (max-width: 1050px) {
+  .contest-hero { min-height: 1260px; }
+  .contest-hero-product { width: min(700px, 100%); min-height: 585px; }
+  .judging-board { grid-template-columns: 1fr; gap: 40px; }
+}
+
+@media (max-width: 760px) {
+  .contest-hero { min-height: 1200px; }
+  .contest-hero h1 { font-size: clamp(54px, 15.5vw, 74px); }
+  .contest-hero-product { min-height: 505px; }
+  .hero-product-head { top: 12px; left: 18px; right: 18px; }
+  .hero-logo-placeholder { top: 105px; left: 5px; width: 120px; height: 135px; }
+  .hero-phone-home { right: 55px; bottom: -12px; width: 205px; height: 445px; }
+  .hero-phone-detail { right: -58px; bottom: 33px; width: 172px; height: 373px; }
+  .hero-usage { left: 7px; bottom: 18px; flex-direction: column; align-items: flex-start; }
+  .judging-board { margin-top: 45px; padding: 30px 22px; border-radius: 26px; }
+  .judging-heading h3 { font-size: 35px; }
+  .judging-criteria > div { min-height: 96px; grid-template-columns: 34px 1fr auto; gap: 10px; }
+  .judging-criteria small { max-width: 210px; }
+  .judging-disqualify { padding: 22px; grid-template-columns: 1fr; gap: 15px; }
+  .prize-grid { grid-template-columns: 1fr; }
+  .prize-card-03 { min-height: 365px !important; }
+  .prize-keyring { height: 235px; }
+}
+
 /* Clear contest brief — concrete product context instead of decorative shapes */
 .contest-hero {
   min-height: 860px;
@@ -221,4 +331,40 @@
   .contest-usage-board { border-radius: 25px; }.usage-board-copy { padding: 34px 24px; }.usage-board-copy h3 { font-size: 36px; }.usage-board-preview { min-height: 500px; }
   .usage-phone { width: 205px; height: 445px; bottom: -80px; }.usage-app-icon { left: 4%; top: 54px; width: 112px; height: 130px; border-radius: 27px; }.usage-app-icon strong { font-size: 54px; }.usage-poster { right: -37px; bottom: 28px; width: 145px; height: 205px; padding: 18px; }.usage-poster strong { font-size: 18px; }
   .requirement-grid { grid-template-columns: 1fr; }.requirement-grid article { min-height: 300px; }.brief-example { height: 140px; }
+}
+
+/* Final hero composition */
+.contest-hero {
+  min-height: 930px;
+  grid-template-columns: minmax(0, .9fr) minmax(520px, 1.1fr);
+  gap: clamp(45px, 6vw, 100px);
+  background:
+    radial-gradient(ellipse at 75% 90%, rgba(118, 189, 16, .28), transparent 38%),
+    radial-gradient(circle at 86% 36%, rgba(156, 225, 43, .1), transparent 24%),
+    #070907;
+}
+.contest-hero h1 { max-width: 760px; margin-block: 26px 22px; font-size: clamp(66px, 6.1vw, 102px); line-height: 1.02; }
+.contest-hero-product { min-height: 590px; overflow: visible; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.contest-hero-product::before { content: ""; position: absolute; left: 7%; right: -7%; bottom: -4%; height: 44%; border-radius: 50%; background: rgba(126, 202, 23, .24); filter: blur(75px); }
+.hero-product-head { position: absolute; top: 24px; left: 80px; right: 24px; height: 58px; padding: 0 20px; border: 1px solid rgba(255,255,255,.13); border-radius: 999px; background: rgba(20,24,20,.72); backdrop-filter: blur(18px); }
+.hero-logo-placeholder { top: 150px; left: 4px; width: 155px; height: 170px; border-style: solid; background: rgba(18,21,18,.82); box-shadow: 0 24px 60px rgba(0,0,0,.34); transform: rotate(-8deg); }
+.hero-phone { border-width: 6px; box-shadow: 0 38px 85px rgba(0,0,0,.52); }
+.hero-phone-home { right: 105px; bottom: 5px; width: 248px; height: 538px; transform: rotate(5deg); }
+.hero-phone-detail { right: -50px; bottom: 52px; width: 205px; height: 445px; transform: rotate(-4deg); }
+.hero-usage { left: 20px; bottom: 34px; }
+.hero-usage span { border: 1px solid rgba(255,255,255,.1); background: rgba(10,12,10,.62); backdrop-filter: blur(12px); }
+
+@media (max-width: 1050px) {
+  .contest-hero { min-height: 1260px; grid-template-columns: 1fr; align-content: start; }
+  .contest-hero-product { width: min(700px, 100%); min-height: 585px; margin-inline: auto; }
+}
+@media (max-width: 760px) {
+  .contest-hero { min-height: 1200px; padding-inline: 20px; }
+  .contest-hero h1 { font-size: clamp(54px, 15.5vw, 74px); }
+  .contest-hero-product { min-height: 505px; border-radius: 0; }
+  .hero-product-head { top: 12px; left: 18px; right: 18px; height: 58px; padding-inline: 18px; }
+  .hero-logo-placeholder { top: 105px; left: 5px; width: 120px; height: 135px; padding: 17px; }
+  .hero-phone-home { right: 55px; bottom: -12px; width: 205px; height: 445px; }
+  .hero-phone-detail { right: -58px; bottom: 33px; width: 172px; height: 373px; }
+  .hero-usage { left: 7px; bottom: 18px; }
 }

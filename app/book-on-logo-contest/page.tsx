@@ -27,7 +27,7 @@ const requirements = [
 const prizes = [
   { rank: "01", title: "1등", reward: "15,000원", copy: "Book-on 공식 로고 선정" },
   { rank: "02", title: "2등", reward: "5,000원", copy: "우수한 브랜드 아이디어" },
-  { rank: "03", title: "3등", reward: "Native 굿즈", copy: "인상적인 시각적 제안" },
+  { rank: "03", title: "3등", reward: "Native 키링", copy: "Native 로고 아크릴 키링" },
 ];
 
 export default function BookOnLogoContestPage() {
@@ -125,19 +125,19 @@ export default function BookOnLogoContestPage() {
       <header className="contest-header">
         <a className="contest-brand" href="/" aria-label="Native 홈페이지"><span><Image src="/native-logo.png" alt="" fill sizes="36px" unoptimized /></span><b>Native</b></a>
         <div className="contest-header-label"><i /> BOOK-ON 로고 공모전</div>
-        <nav aria-label="공모전 메뉴"><a href="#guide">공모 요강</a><a href="#prize">시상 안내</a><a className="contest-header-cta" href="#submit">작품 제출하기 <span>↓</span></a></nav>
+        <nav aria-label="공모전 메뉴"><a href="#guide">공모 요강</a><a href="#judging">심사 기준</a><a href="#prize">시상 안내</a><a className="contest-header-cta" href="#submit">작품 제출하기 <span>↓</span></a></nav>
       </header>
 
       <section className="contest-hero">
         <div className="contest-hero-copy">
-          <div className="contest-eyebrow"><span>2026</span> 학교 전체 대상 · Native 주최</div>
-          <h1><em>Book-on</em><br />로고 공모전</h1>
-          <p>학교 도서관 플랫폼 Book-on의 공식 로고를 찾습니다.<br />앱을 대표할 단순하고 선명한 아이디어를 보내주세요.</p>
+          <div className="contest-eyebrow"><span>OPEN CALL</span> 학교 전체 대상 · Native 주최</div>
+          <h1><em>Book-on</em>의<br />새로운 얼굴을<br />찾습니다.</h1>
+          <p>학교 도서관 플랫폼 Book-on의 공식 로고 공모전입니다.<br />오래 기억되고 어디서나 선명한 아이디어를 보내주세요.</p>
           <div className="contest-hero-actions"><a href="#submit">공모전 참여하기 <span>→</span></a><a href="#guide">요강 먼저 보기</a></div>
           <div className="contest-hero-facts"><span><b>마감</b> 7월 25일 23:59</span><span><b>형식</b> PNG · 최대 10MB</span><span><b>제출</b> 1인 1작품</span></div>
         </div>
         <div className="contest-hero-product">
-          <div className="hero-product-head"><span><i /> BOOK-ON APP</span><small>공식 로고 적용 예시</small></div>
+          <div className="hero-product-head"><span><i /> BOOK-ON APP</span><small>여러분의 로고가 적용될 실제 서비스</small></div>
           <div className="hero-logo-placeholder"><small>이 자리에</small><strong>?</strong><b>여러분의 로고가 들어갑니다</b></div>
           <div className="hero-phone hero-phone-home"><Image src="/book-on.png" alt="Book-on 홈 화면" fill sizes="260px" unoptimized /></div>
           <div className="hero-phone hero-phone-detail"><Image src="/bookon-detail.png" alt="Book-on 도서 상세 화면" fill sizes="220px" unoptimized /></div>
@@ -161,13 +161,23 @@ export default function BookOnLogoContestPage() {
             <small>{number}</small><h3>{title}</h3><p>{copy}</p>
           </article>)}
         </div>
-        <div className="contest-caution"><span>!</span><div><b>제출 전에 꼭 확인해주세요.</b><p>타인의 저작물이나 기존 브랜드를 도용한 작품은 심사에서 제외됩니다. AI를 사용했다면 제출 단계에서 반드시 표시해야 하며, 최종 작품에 대한 책임은 제출자에게 있습니다.</p></div></div>
+        <div className="judging-board" id="judging">
+          <div className="judging-heading"><small>JUDGING STANDARD</small><h3>Book-on다운 로고를<br />이 기준으로 선정합니다.</h3><p>화려함보다 서비스에 잘 어울리고, 작은 화면에서도 오래 사용할 수 있는지를 봅니다.</p></div>
+          <div className="judging-criteria">
+            <div><b>01</b><span><strong>브랜드 적합성</strong><small>Book-on과 도서관 서비스의 성격이 자연스럽게 드러나는가</small></span><em>35%</em></div>
+            <div><b>02</b><span><strong>완성도와 확장성</strong><small>앱 아이콘부터 인쇄물까지 다양한 환경에서 선명한가</small></span><em>30%</em></div>
+            <div><b>03</b><span><strong>심플함과 가독성</strong><small>불필요한 장식 없이 한눈에 인식되고 기억되는가</small></span><em>25%</em></div>
+            <div><b>04</b><span><strong>독창성</strong><small>기존 브랜드와 구별되는 자신만의 아이디어가 있는가</small></span><em>10%</em></div>
+          </div>
+          <div className="judging-disqualify"><span>무조건 탈락</span><div><strong>다른 작품이나 기존 브랜드를 베끼거나 도용한 경우</strong><p>모방·도용 또는 과도한 유사성이 확인되면 점수와 관계없이 즉시 심사에서 제외합니다.</p></div></div>
+        </div>
+        <div className="contest-caution"><span>!</span><div><b>제출 전에 꼭 확인해주세요.</b><p>AI를 사용했다면 제출 단계에서 반드시 표시해야 하며, 제출 작품의 저작권과 독창성에 대한 책임은 제출자에게 있습니다.</p></div></div>
       </section>
 
       <section className="prize-section" id="prize">
         <div className="contest-shell">
           <div className="contest-section-heading light"><div><small>02 · 시상 안내</small><h2>선정된 로고는<br />Book-on의 공식 얼굴이 됩니다.</h2></div><p>수상 결과는 심사 후 학교 이메일로 개별 안내하며,<br />1등 작품은 실제 서비스에 적용할 예정입니다.</p></div>
-          <div className="prize-grid">{prizes.map((prize) => <article key={prize.rank}><small>{prize.rank}</small><div className="prize-rank">{prize.title}</div><div><b>{prize.title} 시상</b><strong>{prize.reward}</strong><p>{prize.copy}</p></div></article>)}</div>
+          <div className="prize-grid">{prizes.map((prize) => <article className={`prize-card prize-card-${prize.rank}`} key={prize.rank}><small>{prize.rank}</small>{prize.rank === "03" ? <div className="prize-keyring"><Image src="/native-keyring-prize.png" alt="3등 상품 Native 로고 아크릴 키링" fill sizes="(max-width: 760px) 90vw, 360px" unoptimized /></div> : <div className="prize-rank">{prize.title}</div>}<div className="prize-card-copy"><b>{prize.title} 시상</b><strong>{prize.reward}</strong><p>{prize.copy}</p></div></article>)}</div>
           <div className="contest-process"><div><small>01</small><b>작품 접수</b><span>7월 25일 23:59까지</span></div><i>→</i><div><small>02</small><b>내부 심사</b><span>Native · Book-on 팀</span></div><i>→</i><div><small>03</small><b>결과 발표</b><span>개별 안내 예정</span></div></div>
         </div>
       </section>
