@@ -11,9 +11,9 @@ const financeData = {
     reserveBalance: 6240000,
   },
   pools: [
-    { id: "operation", label: "운영풀", amount: 3560000, ratio: 40, color: "#3182f6", note: "제품 운영과 공통 비용" },
-    { id: "reserve", label: "적립풀", amount: 2670000, ratio: 30, color: "#6b5ce7", note: "다음 프로젝트를 위한 적립" },
-    { id: "dividend", label: "배당풀", amount: 2670000, ratio: 30, color: "#00b8a9", note: "프로젝트 기여 배분 예정액" },
+    { id: "operation", label: "운영풀", amount: 3560000, ratio: 40, color: "#191f28", note: "제품 운영과 공통 비용" },
+    { id: "reserve", label: "적립풀", amount: 2670000, ratio: 30, color: "#8b95a1", note: "다음 프로젝트를 위한 적립" },
+    { id: "dividend", label: "배당풀", amount: 2670000, ratio: 30, color: "#e9b928", note: "프로젝트 기여 배분 예정액" },
   ],
   flow: [
     { month: "1월", income: 1800000, expense: 940000 },
