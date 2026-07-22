@@ -3,7 +3,8 @@ import { getAdminSupabase, jsonError } from "@/lib/supabase-server";
 const BUCKET = "bookon-logo-contest";
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const DEADLINE = new Date("2026-07-25T14:59:59.999Z");
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_PATTERN = /^s\d{5}@gsm\.hs\.kr$/;
+const EMAIL_FORMAT_ERROR = "학교 이메일을 s25038@gsm.hs.kr 형식으로 입력해주세요.";
 const FILE_PATH_PATTERN = /^submissions\/[0-9a-f-]{36}\.png$/i;
 
 export async function GET(request: Request) {
@@ -11,7 +12,7 @@ export async function GET(request: Request) {
   if (!client) return jsonError("제출 서버가 준비되지 않았습니다.", 503);
 
   const email = normalizeEmail(new URL(request.url).searchParams.get("email"));
-  if (!email || !EMAIL_PATTERN.test(email)) return jsonError("학교 이메일을 정확히 입력해주세요.");
+  if (!email || !EMAIL_PATTERN.test(email)) return jsonError(EMAIL_FORMAT_ERROR);
 
   const { data, error } = await client
     .from("logo_contest_submissions")
@@ -36,7 +37,7 @@ export async function POST(request: Request) {
     const email = normalizeEmail(body.email);
     const fileName = clean(body.fileName, 180);
     const fileSize = numberValue(body.fileSize);
-    if (!email || !EMAIL_PATTERN.test(email)) return jsonError("학교 이메일을 정확히 입력해주세요.");
+    if (!email || !EMAIL_PATTERN.test(email)) return jsonError(EMAIL_FORMAT_ERROR);
     if (!fileName.toLowerCase().endsWith(".png")) return jsonError("PNG 파일만 업로드할 수 있습니다.");
     if (fileSize <= 0 || fileSize > MAX_FILE_SIZE) return jsonError("파일 크기는 최대 10MB까지 가능합니다.");
 
@@ -65,7 +66,8 @@ export async function POST(request: Request) {
     const filePath = clean(body.filePath, 160);
     const creationMethod = clean(body.creationMethod, 12);
 
-    if (!name || !email || !EMAIL_PATTERN.test(email)) return jsonError("이름과 학교 이메일을 정확히 입력해주세요.");
+    if (!name) return jsonError("이름을 정확히 입력해주세요.");
+    if (!email || !EMAIL_PATTERN.test(email)) return jsonError(EMAIL_FORMAT_ERROR);
     if (grade < 1 || grade > 3 || classNumber < 1 || classNumber > 20 || studentNumber < 1 || studentNumber > 50) return jsonError("학년, 반, 번호를 정확히 입력해주세요.");
     if (!FILE_PATH_PATTERN.test(filePath) || !fileName.toLowerCase().endsWith(".png") || fileSize <= 0 || fileSize > MAX_FILE_SIZE) return jsonError("업로드한 PNG 파일을 확인해주세요.");
     if (!['direct', 'ai'].includes(creationMethod)) return jsonError("제작 방법을 선택해주세요.");

@@ -14,6 +14,8 @@ type FormValue = {
 };
 
 const initialValue: FormValue = { name: "", grade: "", classNumber: "", studentNumber: "", email: "", creationMethod: "" };
+const SCHOOL_EMAIL_PATTERN = /^s\d{5}@gsm\.hs\.kr$/i;
+const SCHOOL_EMAIL_EXAMPLE = "s25038@gsm.hs.kr";
 
 const requirements = [
   ["01", "모던하고 심플한 스타일 (Apple 감성)", "불필요한 장식을 덜어내고 여백과 비례가 정돈된, 오래 보아도 편안한 디자인을 원해요."],
@@ -92,9 +94,9 @@ export default function BookOnLogoContestPage() {
 
   const checkEmail = async () => {
     const email = value.email.trim().toLowerCase();
-    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+    if (!SCHOOL_EMAIL_PATTERN.test(email)) {
       setEmailState("idle");
-      setError("학교 이메일을 정확히 입력한 뒤 중복 확인을 눌러주세요.");
+      setError(`학교 이메일을 ${SCHOOL_EMAIL_EXAMPLE} 형식으로 입력해주세요.`);
       return false;
     }
     setError("");
@@ -117,6 +119,7 @@ export default function BookOnLogoContestPage() {
     const fileError = validateFile(file);
     if (fileError) return setError(fileError);
     if (!value.name.trim() || !value.grade || !value.classNumber || !value.studentNumber || !value.email.trim() || !value.creationMethod) return setError("모든 항목을 빠짐없이 작성해주세요.");
+    if (!SCHOOL_EMAIL_PATTERN.test(value.email.trim())) return setError(`학교 이메일을 ${SCHOOL_EMAIL_EXAMPLE} 형식으로 입력해주세요.`);
     if (emailState !== "available") return setError("학교 이메일 중복 확인을 먼저 완료해주세요.");
 
     setBusy(true);
@@ -234,22 +237,22 @@ export default function BookOnLogoContestPage() {
 
       <section className="prize-section" id="prize">
         <div className="contest-shell">
-          <div className="contest-section-heading light"><div><small>02 · 시상 안내</small><h2>선정된 로고는<br />Book-on의 공식 얼굴이 됩니다.</h2></div><p>수상 결과는 심사 후 학교 이메일로 개별 안내하며,<br />1등 작품은 실제 서비스에 적용할 예정입니다.</p></div>
+          <div className="contest-section-heading light"><div><small>02 · 시상 안내</small><h2>선정된 로고는<br />Book-on의 공식 얼굴이 됩니다.</h2></div><p>심사 결과는 추후 디스코드 공지로 알려드릴게요.<br />1등 작품은 실제 서비스에 적용할 예정입니다.</p></div>
           <div className="prize-grid">{prizes.map((prize) => <article className={`prize-card prize-card-${prize.rank}`} key={prize.rank}><small>{prize.rank}</small>{prize.rank === "03" ? <div className="prize-keyring"><Image src="/native-keyring-prize.png" alt="3등 상품 Native 로고 아크릴 키링" fill sizes="(max-width: 760px) 90vw, 360px" unoptimized /></div> : <div className="prize-rank">{prize.title}</div>}<div className="prize-card-copy"><b>{prize.title} 시상</b><strong>{prize.reward}</strong><p>{prize.copy}</p></div></article>)}</div>
-          <div className="contest-process"><div><small>01</small><b>작품 접수</b><span>7월 25일 23:59까지</span></div><i>→</i><div><small>02</small><b>내부 심사</b><span>Native · Book-on 팀</span></div><i>→</i><div><small>03</small><b>결과 발표</b><span>개별 안내 예정</span></div></div>
+          <div className="contest-process"><div><small>01</small><b>작품 접수</b><span>7월 25일 23:59까지</span></div><i>→</i><div><small>02</small><b>내부 심사</b><span>Native · Book-on 팀</span></div><i>→</i><div><small>03</small><b>결과 발표</b><span>디스코드 공지 예정</span></div></div>
         </div>
       </section>
 
       <section className="submit-section contest-shell" id="submit">
         <div className="submit-side"><small>03 · SUBMISSION</small><h2>준비한 로고를<br />보내주세요.</h2><p>제출은 한 번만 가능합니다. 이름과 학교 이메일, 파일을 다시 확인한 뒤 제출해주세요.</p><div className="submit-summary"><div><span>FILE</span><b>PNG · 최대 10MB</b></div><div><span>LIMIT</span><b>1인 1작품</b></div><div><span>DEADLINE</span><b>07.25 · 23:59</b></div></div></div>
         {complete ? (
-          <div className="submit-complete"><div className="complete-mark"><span>✓</span></div><small>SUBMISSION COMPLETE</small><h2>작품이 안전하게<br />제출되었습니다.</h2><p><b>{value.name}</b>님의 Book-on 로고를 접수했어요.<br />심사 결과는 학교 이메일로 안내해드릴게요.</p><div><span>{studentInfo}</span><span>{value.email}</span></div><a href="/">Native 홈페이지로 돌아가기 <b>→</b></a></div>
+          <div className="submit-complete"><div className="complete-mark"><span>✓</span></div><small>SUBMISSION COMPLETE</small><h2>작품이 안전하게<br />제출되었습니다.</h2><p><b>{value.name}</b>님의 Book-on 로고를 접수했어요.<br />심사 결과는 추후 디스코드 공지로 알려드릴게요.</p><div><span>{studentInfo}</span><span>{value.email}</span></div><a href="/">Native 홈페이지로 돌아가기 <b>→</b></a></div>
         ) : (
           <form className="contest-form" onSubmit={submit} noValidate>
             <div className="form-heading"><small>ENTRY FORM</small><h3>Book-on 로고 제출</h3><span>모든 항목은 필수입니다.</span></div>
             <label className="contest-field full"><span>이름</span><input value={value.name} onChange={(event) => update("name", event.target.value)} placeholder="이름을 입력해주세요" autoComplete="name" required /></label>
             <div className="student-fields"><label className="contest-field"><span>학년</span><input inputMode="numeric" maxLength={1} value={value.grade} onChange={(event) => update("grade", event.target.value.replace(/\D/g, ""))} placeholder="예: 2" required /></label><label className="contest-field"><span>반</span><input inputMode="numeric" maxLength={2} value={value.classNumber} onChange={(event) => update("classNumber", event.target.value.replace(/\D/g, ""))} placeholder="예: 3" required /></label><label className="contest-field"><span>번호</span><input inputMode="numeric" maxLength={2} value={value.studentNumber} onChange={(event) => update("studentNumber", event.target.value.replace(/\D/g, ""))} placeholder="예: 17" required /></label></div>
-            <label className={`contest-field full email-field ${emailState}`}><span>학교 이메일</span><div><input type="email" value={value.email} onChange={(event) => update("email", event.target.value)} placeholder="school@email.com" autoComplete="email" required /><button type="button" onClick={() => void checkEmail()} disabled={emailState === "checking" || !/^\S+@\S+\.\S+$/.test(value.email.trim())}>{emailState === "checking" ? "확인 중" : emailState === "available" ? "확인 완료 ✓" : "중복 확인"}</button></div>{emailState === "duplicate" ? <small>이미 제출된 이메일입니다. 다른 이메일을 입력해주세요.</small> : emailState === "available" ? <small className="available-message">제출 가능한 이메일입니다.</small> : <small className="email-help">이메일 입력 후 중복 확인을 눌러주세요.</small>}</label>
+            <label className={`contest-field full email-field ${emailState}`}><span>학교 이메일</span><div><input type="email" value={value.email} onChange={(event) => update("email", event.target.value.toLowerCase())} placeholder={SCHOOL_EMAIL_EXAMPLE} pattern="s[0-9]{5}@gsm\.hs\.kr" maxLength={16} autoCapitalize="none" spellCheck={false} autoComplete="email" required /><button type="button" onClick={() => void checkEmail()} disabled={emailState === "checking" || !SCHOOL_EMAIL_PATTERN.test(value.email.trim())}>{emailState === "checking" ? "확인 중" : emailState === "available" ? "확인 완료 ✓" : "중복 확인"}</button></div>{emailState === "duplicate" ? <small>이미 제출된 이메일입니다. 다른 이메일을 입력해주세요.</small> : emailState === "available" ? <small className="available-message">제출 가능한 학교 이메일입니다.</small> : <small className="email-help">예: {SCHOOL_EMAIL_EXAMPLE} · s와 숫자 5자리를 입력해주세요.</small>}</label>
             <div className="contest-field full"><span>로고 파일</span><label className={`file-drop ${file ? "has-file" : ""}`} onDragOver={(event) => event.preventDefault()} onDrop={(event: DragEvent<HTMLLabelElement>) => { event.preventDefault(); chooseFile(event.dataTransfer.files[0]); }}><input type="file" accept="image/png,.png" onChange={(event: ChangeEvent<HTMLInputElement>) => chooseFile(event.target.files?.[0])} />{file && preview ? <><span className="file-preview" style={{ backgroundImage: `url(${preview})` }} /><div><b>{file.name}</b><small>{(file.size / 1024 / 1024).toFixed(2)}MB · PNG</small><em>다른 파일 선택</em></div></> : <><div className="upload-symbol"><i>↑</i></div><div><b>PNG 파일을 올려주세요.</b><small>클릭하거나 파일을 여기로 드래그 · 최대 10MB</small></div></>}</label></div>
             <fieldset className="method-field"><legend>제작 방법</legend><label className={value.creationMethod === "direct" ? "selected" : ""}><input type="radio" name="creationMethod" value="direct" checked={value.creationMethod === "direct"} onChange={() => update("creationMethod", "direct")} /><span><i>✦</i><b>직접 제작</b><small>디자인 도구 또는 손으로 직접 만들었어요.</small></span></label><label className={value.creationMethod === "ai" ? "selected" : ""}><input type="radio" name="creationMethod" value="ai" checked={value.creationMethod === "ai"} onChange={() => update("creationMethod", "ai")} /><span><i>AI</i><b>AI 생성 사용</b><small>생성형 AI를 전부 또는 일부 사용했어요.</small></span></label></fieldset>
             {error && <div className="contest-error"><span>!</span>{error}</div>}
